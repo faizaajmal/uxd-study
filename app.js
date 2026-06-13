@@ -74,6 +74,99 @@ const GRADS = [
   "linear-gradient(160deg,#3a1a2a,#2a0d1a,#1a2a3a)",
 ];
 
+/* =========================================================
+   PEXELS API — Fixed video set (all participants see same videos)
+   ========================================================= */
+const PEXELS_ENABLED     = true;
+
+/* Fixed list of Pexels video URLs — edit these IDs to change which videos play */
+const FIXED_VIDEO_URLS = [
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 0
+  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 1
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 2
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 3
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 4
+  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 5
+  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 6
+  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 7
+  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 8
+  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 9
+  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 10
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 11
+  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 12
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 13
+  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 14
+  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 15
+  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 16
+  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 17
+  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 18
+  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 19
+  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 20
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 21
+  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 22
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 23
+  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 24
+  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 25
+  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 26
+  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 27
+  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 28
+  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 29
+  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 30
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 31
+  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 32
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 33
+  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 34
+  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 35
+  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 36
+  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 37
+  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 38
+  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 39
+  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 40
+  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 41
+  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 42
+  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 43
+  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 44
+  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 45
+  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 46
+  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 47
+];
+
+function getPexelsVideoUrl(index) {
+  if (!FIXED_VIDEO_URLS.length) return null;
+  return FIXED_VIDEO_URLS[index % FIXED_VIDEO_URLS.length];
+}
+
+async function loadPexelsSources() {
+  if (!PEXELS_ENABLED) return;
+
+  CARDS.forEach((_, i) => {
+    const videoEl = $(`vid-${i}`);
+    if (!videoEl) return;
+    const url = getPexelsVideoUrl(i);
+    if (!url) return;
+    videoEl.src = url;
+    videoEl.preload = "auto";
+  });
+}
+
+function preloadAdjacentVideos(activeIdx) {
+  /* aggressively preload the current, next 2, and previous video */
+  const indicesToPreload = [activeIdx - 1, activeIdx, activeIdx + 1, activeIdx + 2];
+  indicesToPreload.forEach(i => {
+    if (i < 0 || i >= CARDS.length) return;
+    const videoEl = $(`vid-${i}`);
+    if (!videoEl) return;
+    if (!videoEl.src) {
+      const url = getPexelsVideoUrl(i);
+      if (url) videoEl.src = url;
+    }
+    /* start preloading the buffer */
+    if (videoEl.networkState === 0) {
+      videoEl.load();
+    }
+  });
+}
+
 /* SVG paths for action buttons */
 const SVG = {
   thumbsUp: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -313,7 +406,9 @@ function startFeed() {
   S.currentCard     = 0;
   log.cardsViewed   = 1;
 
+  loadPexelsSources();
   syncVideos(0);
+  preloadAdjacentVideos(0);
 
   /* countdown tick */
   S.timerInterval = setInterval(() => {
@@ -344,6 +439,7 @@ function onScroll() {
     S.currentCard   = newIdx;
     S.cardEnteredAt = now();
     syncVideos(newIdx);
+    preloadAdjacentVideos(newIdx);
     checkCues(newIdx);
   }
 }
