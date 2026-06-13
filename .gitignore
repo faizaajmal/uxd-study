@@ -1,3 +1,5 @@
 node_modules
 .DS_Store
+feed-study/videos/
+config.js
 npm-debug.log*
