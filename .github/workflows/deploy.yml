@@ -16,6 +16,10 @@ jobs:
       - name: Inject Pexels API key into config.js
         run: |
           echo "const PEXELS_API_KEY = '${{ secrets.PEXELS_API_KEY }}';" > config.js
+          cat config.js
+
+      - name: List files to confirm
+        run: ls -la
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
