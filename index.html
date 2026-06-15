@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Feed Study Prototype</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =====================================================
+       SCREEN 0 — PARTICIPANT CODE
+       ===================================================== -->
+  <div id="screen-code" class="screen">
+    <div class="code-logo">🌿</div>
+    <div class="code-title">Feed Study</div>
+    <div class="code-sub">UX Research Prototype<br>Enter your participant code to begin.</div>
+    <input
+      id="input-code"
+      class="code-input"
+      type="text"
+      placeholder="P1"
+      maxlength="6"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button id="btn-start" class="btn-start" disabled>Start &rarr;</button>
+  </div>
+
+  <!-- =====================================================
+       FEED CHROME (persistent overlays)
+       ===================================================== -->
+
+  <!-- Eco mode badge — always visible during feed, tappable -->
+  <div id="eco-badge" class="eco-off">
+    <span id="eco-leaf">🌿</span>
+    <span id="eco-label">Eco Mode Off</span>
+  </div>
+
+  <!-- 8-minute countdown -->
+  <div id="session-timer">8:00</div>
+  <button id="btn-end-session" style="display:none;">&#x2715; End</button>
+
+
+  <!-- TikTok-style top tab bar -->
+  <div id="top-bar" style="display:none;">
+    <div class="top-tabs">
+      <span class="top-tab">Following</span>
+      <span class="top-tab active">For You</span>
+      <span class="top-tab">LIVE</span>
+    </div>
+  </div>
+
+  
+
+  <!-- Confirm end modal -->
+  <div class="modal-overlay" id="modal-confirm-end">
+    <div class="modal-card">
+      <div class="modal-leaf">📋</div>
+      <div class="modal-title">End session?</div>
+      <div class="modal-body">This will stop the timer and show you the full session log. You cannot go back.</div>
+      <div class="modal-btns">
+        <button class="mbtn"      id="confirm-cancel">Keep Scrolling</button>
+        <button class="mbtn dark" id="confirm-end">End &amp; Get Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- The scrollable feed — cards injected by app.js -->
+  <div id="feed-container"></div>
+
+  <!-- =====================================================
+       MODAL 1 — Layer 1: Awareness (fires on card 4)
+       ===================================================== -->
+  <div class="modal-overlay" id="modal-layer1">
+    <div class="modal-card">
+      <span class="modal-skip" id="skip1">Skip</span>
+      <div class="modal-leaf">🌿</div>
+      <div class="modal-title">Hi!</div>
+      <div class="modal-body">
+        You have been scrolling for <strong id="cue1-time">a few minutes</strong>.
+        Videos loading automatically in your feed use data centre energy with every scroll.
+      </div>
+      <div class="stat-row">
+        <span class="stat-val" id="cue1-mins">~1 min</span>
+        <span class="stat-lbl">scrolled so far</span>
+      </div>
+      <div class="stat-bar"><div class="stat-fill" id="bar1-time" style="width:20%"></div></div>
+      <div class="stat-row">
+        <span class="stat-val" id="cue1-co2">~0.7g</span>
+        <span class="stat-lbl">CO2 estimated</span>
+      </div>
+      <div class="stat-bar"><div class="stat-fill" id="bar1-co2" style="width:15%"></div></div>
+      <div class="modal-btns">
+        <button class="mbtn"      id="cue1-continue">Continue Scrolling</button>
+        <button class="mbtn dark" id="cue1-tellmore">Tell Me More</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL 2 — Layer 2: Eco mode offer (fires on card 6)
+       ===================================================== -->
+  <div class="modal-overlay" id="modal-layer2">
+    <div class="modal-card">
+      <span class="modal-skip" id="skip2">Skip</span>
+      <div class="modal-leaf">🌿</div>
+      <div class="modal-title">Live session insights</div>
+      <div class="modal-body">
+        Every video loaded, every refresh — it adds up.
+        Eco mode helps reduce your digital carbon impact while you scroll.
+      </div>
+      <div class="eco-compare">
+        <div class="eco-row">
+          <span class="eco-lbl">Your session</span>
+          <span class="eco-val" id="cue2-session">~2.1g CO2</span>
+        </div>
+        <div class="stat-bar"><div class="stat-fill" style="width:70%"></div></div>
+        <div class="eco-row">
+          <span class="eco-lbl">With eco mode</span>
+          <span class="eco-val">~0.8g</span>
+        </div>
+        <div class="stat-bar"><div class="stat-fill g" style="width:27%"></div></div>
+      </div>
+      <div class="modal-btns">
+        <button class="mbtn"     id="cue2-continue">Continue Scrolling</button>
+        <button class="mbtn grn" id="cue2-eco">Turn on Eco Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       MODAL 3 — Eco badge tapped: session insights + toggle
+       ===================================================== -->
+  <div class="modal-overlay" id="modal-badge">
+    <div class="modal-card">
+      <span class="modal-skip" id="skip-badge">Skip</span>
+      <div class="modal-leaf">🌿</div>
+      <div class="modal-title">Live session insights</div>
+      <div class="modal-body" id="badge-body">Your session with eco mode off</div>
+      <div class="eco-compare">
+        <div class="eco-row">
+          <span class="eco-lbl" id="badge-row-lbl">Your session</span>
+          <span class="eco-val" id="badge-co2">~1.4g CO2</span>
+        </div>
+        <div class="stat-bar"><div class="stat-fill" id="badge-bar" style="width:50%"></div></div>
+        <!-- only shown when eco is OFF, to illustrate potential saving -->
+        <div id="badge-eco-compare">
+          <div class="eco-row">
+            <span class="eco-lbl">With eco mode</span>
+            <span class="eco-val">~0.8g</span>
+          </div>
+          <div class="stat-bar"><div class="stat-fill g" style="width:27%"></div></div>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="mbtn"     id="badge-continue">Continue</button>
+        <button class="mbtn grn" id="badge-toggle-eco">Turn on Eco Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       END SCREEN — session complete + data export
+       ===================================================== -->
+  <div id="screen-end" class="screen hidden">
+    <div class="end-icon">📊</div>
+    <div class="end-title">Session Complete</div>
+    <div class="end-sub">
+      Thank you for participating!<br>
+      Copy the log below and share it with your researcher.
+    </div>
+    <div class="log-box" id="log-output"></div>
+    <button class="btn-copy"     id="btn-copy">Copy Log to Clipboard</button>
+    <button class="btn-download" id="btn-download">Download as JSON</button>
+    <button class="btn-restart"  id="btn-restart">Start New Session</button>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
