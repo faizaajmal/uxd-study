@@ -39,7 +39,8 @@
 
   <!-- 8-minute countdown -->
   <div id="session-timer">8:00</div>
-  <button id="btn-end-session" class="btn-end-session" style="display:none;">End Session</button>
+  <button id="btn-end-session" style="display:none;">&#x2715; End</button>
+
 
   <!-- TikTok-style top tab bar -->
   <div id="top-bar" style="display:none;">
@@ -47,6 +48,21 @@
       <span class="top-tab">Following</span>
       <span class="top-tab active">For You</span>
       <span class="top-tab">LIVE</span>
+    </div>
+  </div>
+
+  
+
+  <!-- Confirm end modal -->
+  <div class="modal-overlay" id="modal-confirm-end">
+    <div class="modal-card">
+      <div class="modal-leaf">📋</div>
+      <div class="modal-title">End session?</div>
+      <div class="modal-body">This will stop the timer and show you the full session log. You cannot go back.</div>
+      <div class="modal-btns">
+        <button class="mbtn"      id="confirm-cancel">Keep Scrolling</button>
+        <button class="mbtn dark" id="confirm-end">End &amp; Get Log</button>
+      </div>
     </div>
   </div>
 
@@ -156,10 +172,11 @@
     </div>
     <div class="log-box" id="log-output"></div>
     <button class="btn-copy"     id="btn-copy">Copy Log to Clipboard</button>
-    <button class="btn-download" id="btn-download">Download Logs</button>
+    <button class="btn-download" id="btn-download">Download as JSON</button>
     <button class="btn-restart"  id="btn-restart">Start New Session</button>
   </div>
-<script src="config.js"></script>
+
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

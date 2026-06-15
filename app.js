@@ -1,68 +1,66 @@
 /* =========================================================
    FEED STUDY PROTOTYPE -- app.js
-   =========================================================
-   VIDEO SETUP:
-   Save your Pexels videos as:
-     videos/vid1.mp4, videos/vid2.mp4, ... videos/vid48.mp4
-   The prototype will automatically use them as card backgrounds.
-   If a file is missing the card shows the emoji placeholder instead.
+
+   SETUP: Paste your Pexels API key below.
+   Get one free at https://www.pexels.com/api/
    ========================================================= */
 
 /* ---------------------------------------------------------
    CARD DATA (48 cards)
+   query = search term sent to Pexels for that card's video
    --------------------------------------------------------- */
 const CARDS = [
-  { user:"@noodleworld",    caption:"The best dan dan noodles ever",                tags:"#streetfood #noodles",      likes:"241K", scene:"🍜"  },
-  { user:"@wanderlust.k",   caption:"Paris at golden hour never gets old",          tags:"#travel #paris",            likes:"892K", scene:"🗼"  },
-  { user:"@funnymoments",   caption:"When Monday hits different",                   tags:"#comedy #relatable",        likes:"1.2M", scene:"😹"  },
-  { user:"@stylebyzen",     caption:"That coat tho -- full fit inspo below",        tags:"#fashion #ootd",            likes:"374K", scene:"👗"  },
-  { user:"@wildlifeplanet", caption:"A lion just looked right at my lens",          tags:"#wildlife #nature",         likes:"2.1M", scene:"🦁"  },
-  { user:"@speedrunking",   caption:"New world record! Sub 4 min!!",                tags:"#gaming #speedrun",         likes:"567K", scene:"🎮"  },
-  { user:"@artbymila",      caption:"Started with a blank canvas at midnight",      tags:"#art #timelapse",           likes:"441K", scene:"🎨"  },
-  { user:"@soccer.clips",   caption:"That bicycle kick though",                     tags:"#sports #soccer",           likes:"3.4M", scene:"⚽"  },
-  { user:"@pizzapilgrim",   caption:"18 hours of dough fermentation",               tags:"#food #pizza",              likes:"219K", scene:"🍕"  },
-  { user:"@altitude.life",  caption:"5400m above sea level. Worth it.",             tags:"#mountains #trekking",      likes:"729K", scene:"🏔️" },
-  { user:"@antarcticlens",  caption:"They waddled right past us",                   tags:"#penguins #wildlife",       likes:"1.8M", scene:"🐧"  },
-  { user:"@artsfound",      caption:"Found this performer in Barcelona",            tags:"#streetart #travel",        likes:"332K", scene:"🎭"  },
-  { user:"@tasteofseoul",   caption:"Korean street corn at 2am",                    tags:"#koreanfood #streetfood",   likes:"388K", scene:"🌽"  },
-  { user:"@chefnoah",       caption:"Butter chicken from scratch in 30 min",        tags:"#indianfood #recipe",       likes:"512K", scene:"🍛"  },
-  { user:"@ramenritual",    caption:"Tonkotsu broth simmered 12 hours",             tags:"#ramen #japanese",          likes:"674K", scene:"🍱"  },
-  { user:"@solotravelmaps", caption:"Secret beach in Croatia nobody talks about",   tags:"#croatia #travel",          likes:"1.1M", scene:"🏝️" },
-  { user:"@trainwindow",    caption:"Trans-Siberian railway at sunset",             tags:"#traintravel #landscape",   likes:"543K", scene:"🌅"  },
-  { user:"@nomad.lens",     caption:"Living in Lisbon for $900 per month",          tags:"#digitalnomad #portugal",   likes:"987K", scene:"✈️" },
-  { user:"@dailydose.lol",  caption:"My dog is absolutely judging me",              tags:"#dogs #comedy",             likes:"2.3M", scene:"🐶"  },
-  { user:"@officehumour",   caption:"Passive aggressive sticky note escalation",    tags:"#work #comedy",             likes:"876K", scene:"😂"  },
-  { user:"@thriftqueen",    caption:"Entire outfit: 12 euros from charity shop",    tags:"#thrift #sustainable",      likes:"1.8M", scene:"👠"  },
-  { user:"@minimalist.fit", caption:"5 pieces, 30 outfits -- capsule wardrobe",     tags:"#minimalist #fashion",      likes:"923K", scene:"🧥"  },
-  { user:"@oceandeep.co",   caption:"Bioluminescent waves at midnight",             tags:"#ocean #nature",            likes:"3.4M", scene:"🌊"  },
-  { user:"@foxden",         caption:"Hand-raised fox recognises my voice",          tags:"#fox #animals",             likes:"2.7M", scene:"🦊"  },
-  { user:"@elephantwatch",  caption:"Baby elephant learning to use its trunk",      tags:"#elephant #wildlife",       likes:"4.1M", scene:"🐘"  },
-  { user:"@retropixel",     caption:"Found my Game Boy from 1994. Still works.",    tags:"#retrogaming #nostalgia",   likes:"2.2M", scene:"🕹️" },
-  { user:"@buildlog.pc",    caption:"$300 PC build that beats a PS5",               tags:"#pcbuild #gaming",          likes:"1.3M", scene:"💻"  },
-  { user:"@sculpt.studio",  caption:"Carving a face from a single block of marble", tags:"#sculpture #art",          likes:"2.8M", scene:"🗿"  },
-  { user:"@ink.by.hana",    caption:"This tattoo took 14 hours straight",           tags:"#tattoo #art",              likes:"1.9M", scene:"🎨"  },
-  { user:"@glassblower",    caption:"Molten glass at 1100 degrees looks like lava", tags:"#glassblowing #craft",     likes:"5.1M", scene:"🌋"  },
-  { user:"@surfbreak",      caption:"30-foot wave, no hesitation. Respect.",        tags:"#surfing #sports",          likes:"2.6M", scene:"🏄"  },
-  { user:"@gymreel",        caption:"365 days of training. The transformation.",    tags:"#gym #fitness",             likes:"4.8M", scene:"🏋️" },
-  { user:"@freeclimber",    caption:"Scaled this 200m cliff with no rope",          tags:"#climbing #extreme",        likes:"6.2M", scene:"🧗"  },
-  { user:"@parkour.pov",    caption:"Paris rooftops from a different angle",        tags:"#parkour #sports",          likes:"3.9M", scene:"🏙️" },
-  { user:"@dessertdiary",   caption:"This croissant took 3 days to laminate",       tags:"#baking #pastry",           likes:"431K", scene:"🥐"  },
-  { user:"@islandhop",      caption:"This lagoon in Philippines looks unreal",      tags:"#philippines #travel",      likes:"1.4M", scene:"🐚"  },
-  { user:"@vintagevault",   caption:"90s Levi jeans haul -- unbelievable price",    tags:"#vintage #denim",           likes:"678K", scene:"👖"  },
-  { user:"@colourtheory",   caption:"Stop wearing colours that wash you out",       tags:"#style #colouranalysis",    likes:"2.4M", scene:"🌈"  },
-  { user:"@cloudleopard",   caption:"Spotted in the wild -- once in a lifetime",    tags:"#leopard #wildlife",        likes:"1.6M", scene:"🐆"  },
-  { user:"@esportsclips",   caption:"This play should be studied in schools",       tags:"#esports #gaming",          likes:"4.5M", scene:"🏆"  },
-  { user:"@indiedevdiary",  caption:"I made this game alone in my bedroom",         tags:"#indiegame #gamedev",       likes:"876K", scene:"🎲"  },
-  { user:"@muralistco",     caption:"Turning a blank wall into a landmark",         tags:"#mural #streetart",         likes:"3.2M", scene:"🖌️" },
-  { user:"@ultrarunner",    caption:"100 miles in 24 hours. Never again.",          tags:"#ultramarathon #running",   likes:"1.7M", scene:"🏃"  },
-  { user:"@parentmode",     caption:"Explaining WiFi to my nan for the 8th time",   tags:"#family #comedy",           likes:"1.5M", scene:"👵"  },
-  { user:"@roommatestory",  caption:"He thought this was a salad ingredient",       tags:"#roommate #comedy",         likes:"654K", scene:"🤦"  },
-  { user:"@gymfails",       caption:"Overconfidence: a documentary",                tags:"#gym #comedy #fail",        likes:"3.1M", scene:"😬"  },
-  { user:"@bonsaimaster",   caption:"10 years of growth in 60 seconds",             tags:"#bonsai #nature",           likes:"988K", scene:"🌿"  },
-  { user:"@deepseadive",    caption:"Found this shipwreck 40 metres down",          tags:"#diving #ocean",            likes:"1.3M", scene:"🤿"  },
+  { user:"@noodleworld",    caption:"The best dan dan noodles ever",                 tags:"#streetfood #noodles",      likes:"241K", scene:"🍜",  query:"street food noodles" },
+  { user:"@wanderlust.k",   caption:"Paris at golden hour never gets old",           tags:"#travel #paris",            likes:"892K", scene:"🗼",  query:"paris city travel" },
+  { user:"@funnymoments",   caption:"When Monday hits different",                    tags:"#comedy #relatable",        likes:"1.2M", scene:"😹",  query:"funny cat animal" },
+  { user:"@stylebyzen",     caption:"That coat tho -- full fit inspo below",         tags:"#fashion #ootd",            likes:"374K", scene:"👗",  query:"fashion style woman" },
+  { user:"@wildlifeplanet", caption:"A lion just looked right at my lens",           tags:"#wildlife #nature",         likes:"2.1M", scene:"🦁",  query:"lion wildlife savanna" },
+  { user:"@speedrunking",   caption:"New world record! Sub 4 min!!",                 tags:"#gaming #speedrun",         likes:"567K", scene:"🎮",  query:"gaming setup technology" },
+  { user:"@artbymila",      caption:"Started with a blank canvas at midnight",       tags:"#art #timelapse",           likes:"441K", scene:"🎨",  query:"painting art brush" },
+  { user:"@soccer.clips",   caption:"That bicycle kick though",                      tags:"#sports #soccer",           likes:"3.4M", scene:"⚽",  query:"soccer football sport" },
+  { user:"@pizzapilgrim",   caption:"18 hours of dough fermentation",                tags:"#food #pizza",              likes:"219K", scene:"🍕",  query:"pizza cooking italian food" },
+  { user:"@altitude.life",  caption:"5400m above sea level. Worth it.",              tags:"#mountains #trekking",      likes:"729K", scene:"🏔️", query:"mountain hiking nature" },
+  { user:"@antarcticlens",  caption:"They waddled right past us",                    tags:"#penguins #wildlife",       likes:"1.8M", scene:"🐧",  query:"penguin bird cold" },
+  { user:"@artsfound",      caption:"Found this performer in Barcelona",             tags:"#streetart #travel",        likes:"332K", scene:"🎭",  query:"street performer music dance" },
+  { user:"@tasteofseoul",   caption:"Korean street corn at 2am",                     tags:"#koreanfood #streetfood",   likes:"388K", scene:"🌽",  query:"korean food market asia" },
+  { user:"@chefnoah",       caption:"Butter chicken from scratch in 30 min",         tags:"#indianfood #recipe",       likes:"512K", scene:"🍛",  query:"cooking chef kitchen" },
+  { user:"@ramenritual",    caption:"Tonkotsu broth simmered 12 hours",              tags:"#ramen #japanese",          likes:"674K", scene:"🍱",  query:"ramen japanese soup" },
+  { user:"@solotravelmaps", caption:"Secret beach in Croatia nobody talks about",    tags:"#croatia #travel",          likes:"1.1M", scene:"🏝️", query:"beach ocean tropical waves" },
+  { user:"@trainwindow",    caption:"Trans-Siberian railway at sunset",              tags:"#traintravel #landscape",   likes:"543K", scene:"🌅",  query:"train journey sunset landscape" },
+  { user:"@nomad.lens",     caption:"Living in Lisbon for $900 per month",           tags:"#digitalnomad #portugal",   likes:"987K", scene:"✈️", query:"city cafe laptop travel" },
+  { user:"@dailydose.lol",  caption:"My dog is absolutely judging me",               tags:"#dogs #comedy",             likes:"2.3M", scene:"🐶",  query:"cute dog puppy funny" },
+  { user:"@officehumour",   caption:"Passive aggressive sticky note escalation",     tags:"#work #comedy",             likes:"876K", scene:"😂",  query:"office work desk people" },
+  { user:"@thriftqueen",    caption:"Entire outfit: 12 euros from charity shop",     tags:"#thrift #sustainable",      likes:"1.8M", scene:"👠",  query:"vintage fashion shopping" },
+  { user:"@minimalist.fit", caption:"5 pieces, 30 outfits -- capsule wardrobe",      tags:"#minimalist #fashion",      likes:"923K", scene:"🧥",  query:"minimalist fashion clothing" },
+  { user:"@oceandeep.co",   caption:"Bioluminescent waves at midnight",              tags:"#ocean #nature",            likes:"3.4M", scene:"🌊",  query:"ocean waves night sea" },
+  { user:"@foxden",         caption:"Hand-raised fox recognises my voice",           tags:"#fox #animals",             likes:"2.7M", scene:"🦊",  query:"fox animal forest wildlife" },
+  { user:"@elephantwatch",  caption:"Baby elephant learning to use its trunk",       tags:"#elephant #wildlife",       likes:"4.1M", scene:"🐘",  query:"elephant baby wildlife africa" },
+  { user:"@retropixel",     caption:"Found my Game Boy from 1994. Still works.",     tags:"#retrogaming #nostalgia",   likes:"2.2M", scene:"🕹️", query:"retro vintage technology" },
+  { user:"@buildlog.pc",    caption:"$300 PC build that beats a PS5",                tags:"#pcbuild #gaming",          likes:"1.3M", scene:"💻",  query:"computer technology setup" },
+  { user:"@sculpt.studio",  caption:"Carving a face from a single block of marble",  tags:"#sculpture #art",           likes:"2.8M", scene:"🗿",  query:"sculpture marble craft art" },
+  { user:"@ink.by.hana",    caption:"This tattoo took 14 hours straight",            tags:"#tattoo #art",              likes:"1.9M", scene:"🎨",  query:"tattoo art ink" },
+  { user:"@glassblower",    caption:"Molten glass at 1100 degrees looks like lava",  tags:"#glassblowing #craft",      likes:"5.1M", scene:"🌋",  query:"glass blowing fire craft" },
+  { user:"@surfbreak",      caption:"30-foot wave, no hesitation. Respect.",         tags:"#surfing #sports",          likes:"2.6M", scene:"🏄",  query:"surfing waves ocean sport" },
+  { user:"@gymreel",        caption:"365 days of training. The transformation.",     tags:"#gym #fitness",             likes:"4.8M", scene:"🏋️", query:"gym workout fitness training" },
+  { user:"@freeclimber",    caption:"Scaled this 200m cliff with no rope",           tags:"#climbing #extreme",        likes:"6.2M", scene:"🧗",  query:"rock climbing mountain sport" },
+  { user:"@parkour.pov",    caption:"Paris rooftops from a different angle",         tags:"#parkour #sports",          likes:"3.9M", scene:"🏙️", query:"parkour urban city jump" },
+  { user:"@dessertdiary",   caption:"This croissant took 3 days to laminate",        tags:"#baking #pastry",           likes:"431K", scene:"🥐",  query:"baking pastry bread croissant" },
+  { user:"@islandhop",      caption:"This lagoon in Philippines looks unreal",       tags:"#philippines #travel",      likes:"1.4M", scene:"🐚",  query:"tropical island lagoon turquoise" },
+  { user:"@vintagevault",   caption:"90s Levi jeans haul -- unbelievable price",     tags:"#vintage #denim",           likes:"678K", scene:"👖",  query:"vintage clothing thrift store" },
+  { user:"@colourtheory",   caption:"Stop wearing colours that wash you out",        tags:"#style #colouranalysis",    likes:"2.4M", scene:"🌈",  query:"fashion colour style influencer" },
+  { user:"@cloudleopard",   caption:"Spotted in the wild -- once in a lifetime",     tags:"#leopard #wildlife",        likes:"1.6M", scene:"🐆",  query:"leopard jungle wild cat" },
+  { user:"@esportsclips",   caption:"This play should be studied in schools",        tags:"#esports #gaming",          likes:"4.5M", scene:"🏆",  query:"esports gaming tournament" },
+  { user:"@indiedevdiary",  caption:"I made this game alone in my bedroom",          tags:"#indiegame #gamedev",       likes:"876K", scene:"🎲",  query:"coding developer computer" },
+  { user:"@muralistco",     caption:"Turning a blank wall into a landmark",          tags:"#mural #streetart",         likes:"3.2M", scene:"🖌️", query:"mural street art graffiti" },
+  { user:"@ultrarunner",    caption:"100 miles in 24 hours. Never again.",           tags:"#ultramarathon #running",   likes:"1.7M", scene:"🏃",  query:"running trail marathon" },
+  { user:"@parentmode",     caption:"Explaining WiFi to my nan for the 8th time",    tags:"#family #comedy",           likes:"1.5M", scene:"👵",  query:"family home funny" },
+  { user:"@roommatestory",  caption:"He thought this was a salad ingredient",        tags:"#roommate #comedy",         likes:"654K", scene:"🤦",  query:"cooking kitchen funny fail" },
+  { user:"@gymfails",       caption:"Overconfidence: a documentary",                 tags:"#gym #comedy #fail",        likes:"3.1M", scene:"😬",  query:"gym fail funny workout" },
+  { user:"@bonsaimaster",   caption:"10 years of growth in 60 seconds",              tags:"#bonsai #nature",           likes:"988K", scene:"🌿",  query:"bonsai tree nature plant" },
+  { user:"@deepseadive",    caption:"Found this shipwreck 40 metres down",           tags:"#diving #ocean",            likes:"1.3M", scene:"🤿",  query:"scuba diving underwater ocean" },
 ];
 
-/* gradient fallback palette (cycles if fewer than 48 videos) */
+/* gradient shown while video loads or as fallback */
 const GRADS = [
   "linear-gradient(160deg,#1a3a2a,#0d1f0d,#2a1a0d)",
   "linear-gradient(160deg,#1a1a3a,#0d0d2a,#1a0d2a)",
@@ -74,177 +72,142 @@ const GRADS = [
   "linear-gradient(160deg,#3a1a2a,#2a0d1a,#1a2a3a)",
 ];
 
-/* =========================================================
-   PEXELS API — Fixed video set (all participants see same videos)
-   ========================================================= */
-const PEXELS_ENABLED     = true;
+/* will hold the resolved streamable mp4 links after API fetch */
+const resolvedURLs = new Array(CARDS.length).fill(null);
 
-/* Fixed list of Pexels video URLs — edit these IDs to change which videos play */
-const FIXED_VIDEO_URLS = [
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 0
-  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 1
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 2
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 3
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 4
-  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 5
-  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 6
-  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 7
-  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 8
-  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 9
-  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 10
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 11
-  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 12
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 13
-  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 14
-  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 15
-  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 16
-  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 17
-  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 18
-  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 19
-  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 20
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 21
-  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 22
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 23
-  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 24
-  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 25
-  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 26
-  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 27
-  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 28
-  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 29
-  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 30
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 31
-  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 32
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 33
-  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 34
-  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 35
-  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 36
-  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 37
-  "https://media.pexels.com/videos/2763283/free-2763283.mp4",   // 38
-  "https://media.pexels.com/videos/3278212/free-3278212.mp4",   // 39
-  "https://media.pexels.com/videos/2873922/free-2873922.mp4",   // 40
-  "https://media.pexels.com/videos/3571065/free-3571065.mp4",   // 41
-  "https://media.pexels.com/videos/2988063/free-2988063.mp4",   // 42
-  "https://media.pexels.com/videos/3225517/free-3225517.mp4",   // 43
-  "https://media.pexels.com/videos/3861969/free-3861969.mp4",   // 44
-  "https://media.pexels.com/videos/4077399/free-4077399.mp4",   // 45
-  "https://media.pexels.com/videos/2732274/free-2732274.mp4",   // 46
-  "https://media.pexels.com/videos/3045163/free-3045163.mp4",   // 47
-];
-
-function getPexelsVideoUrl(index) {
-  if (!FIXED_VIDEO_URLS.length) return null;
-  return FIXED_VIDEO_URLS[index % FIXED_VIDEO_URLS.length];
-}
-
-async function loadPexelsSources() {
-  if (!PEXELS_ENABLED) return;
-
-  CARDS.forEach((_, i) => {
-    const videoEl = $(`vid-${i}`);
-    if (!videoEl) return;
-    const url = getPexelsVideoUrl(i);
-    if (!url) return;
-    videoEl.src = url;
-    videoEl.preload = "auto";
-  });
-}
-
-function preloadAdjacentVideos(activeIdx) {
-  /* aggressively preload the current, next 2, and previous video */
-  const indicesToPreload = [activeIdx - 1, activeIdx, activeIdx + 1, activeIdx + 2];
-  indicesToPreload.forEach(i => {
-    if (i < 0 || i >= CARDS.length) return;
-    const videoEl = $(`vid-${i}`);
-    if (!videoEl) return;
-    if (!videoEl.src) {
-      const url = getPexelsVideoUrl(i);
-      if (url) videoEl.src = url;
-    }
-    /* start preloading the buffer */
-    if (videoEl.networkState === 0) {
-      videoEl.load();
-    }
-  });
-}
-
-/* SVG paths for action buttons */
+/* SVG icons */
 const SVG = {
-  thumbsUp: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2 20h2a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H2v9zm18.5-9H14V7a3 3 0 0 0-3-3h-.5L8 10.5V20h9.5l2.5-6.5.5-1.5c0-.83-.67-1.5-1.5-1.5-.17 0 .5 0 .5 0z"/>
-  </svg>`,
-  thumbsDown: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M22 4h-2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2V4zM3.5 13H10v4a3 3 0 0 0 3 3h.5l2.5-6.5V4H7l-2.5 6.5-.5 1.5c0 .83.67 1.5 1.5 1.5.17 0-.5 0-.5 0z"/>
-  </svg>`,
+  thumbsUp: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 20h2a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H2v9zm18.5-9H14V7a3 3 0 0 0-3-3h-.5L8 10.5V20h9.5l2.5-6.5.5-1.5c0-.83-.67-1.5-1.5-1.5z"/></svg>',
+  thumbsDown: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 4h-2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2V4zM3.5 13H10v4a3 3 0 0 0 3 3h.5l2.5-6.5V4H7l-2.5 6.5-.5 1.5c0 .83.67 1.5 1.5 1.5z"/></svg>',
 };
 
-/* ---------------------------------------------------------
+/* =========================================================
    CONSTANTS
-   --------------------------------------------------------- */
-const SESSION_SECS = 8 * 60;  /* 8-minute session */
-const CUE1_CARD   = 3;        /* Layer 1 fires when user reaches card index 3 (4th card) */
-const CUE2_CARD   = 5;        /* Layer 2 fires at card index 5 */
+   ========================================================= */
+const SESSION_SECS = 8 * 60;
+const CUE1_CARD    = 8;
+const CUE2_CARD    = 14;
 
-/* ---------------------------------------------------------
+/* =========================================================
    BEHAVIORAL LOG
-   --------------------------------------------------------- */
+   ========================================================= */
 const log = {
-  participantCode:       "",
-  sessionStart:          null,
-  sessionEnd:            null,
-  sessionEndReason:      "",
-  totalTimeSec:          0,
-  cardsViewed:           0,
-  scrollPx:              0,
-  timeBeforeFirstCueSec: null,
-  timePerCard:           {},
-  likedCards:            [],
-  dislikedCards:         [],
-  buttonInteractions:    [],
-  ecoModeEnabled:        false,
-  ecoModeFirstTimestamp: null,
-  ecoModeToggleCount:    0,
-  ecoModeOnAtEnd:        false,
-  cue1: { shown:false, shownAt:null, action:null },
-  cue2: { shown:false, shownAt:null, action:null },
-  badgeTaps:             [],
+  participantCode:"", sessionStart:null, sessionEnd:null,
+  sessionEndReason:"", totalTimeSec:0, cardsViewed:0, scrollPx:0,
+  timeBeforeFirstCueSec:null, timePerCard:{},
+  likedCards:[], dislikedCards:[], buttonInteractions:[],
+  ecoModeEnabled:false, ecoModeFirstTimestamp:null,
+  ecoModeToggleCount:0, ecoModeOnAtEnd:false,
+  cue1:{ shown:false, shownAt:null, action:null },
+  cue2:{ shown:false, shownAt:null, action:null },
+  badgeTaps:[],
 };
 
-/* ---------------------------------------------------------
+/* =========================================================
    APP STATE
-   --------------------------------------------------------- */
+   ========================================================= */
 let S = {
-  phase:         "code",
-  currentCard:   0,
-  cardEnteredAt: null,
-  cue1Done:      false,
-  cue2Done:      false,
-  ecoOn:         false,
-  timerInterval: null,
-  elapsedSec:    0,
+  phase:"code", currentCard:0, cardEnteredAt:null,
+  cue1Done:false, cue2Done:false, ecoOn:false,
+  timerInterval:null, elapsedSec:0,
 };
 
-/* ---------------------------------------------------------
+/* =========================================================
    UTILITIES
-   --------------------------------------------------------- */
+   ========================================================= */
 function now()     { return Date.now(); }
-function elapsed() { return log.sessionStart ? Math.floor((now() - log.sessionStart) / 1000) : 0; }
-function fmtTime(s){ return Math.floor(s/60) > 0 ? `~${Math.floor(s/60)} min` : `~${s}s`; }
-function fmtCO2(s) { return `~${(s / 60 * 0.7).toFixed(1)}g CO2`; }
-function fmtMSS(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
-function logBtn(n) { log.buttonInteractions.push({ button:n, timestamp:new Date().toISOString(), elapsedSec:elapsed() }); }
-function showModal(id) { document.getElementById(id).classList.add("visible"); }
-function hideModal(id) { document.getElementById(id).classList.remove("visible"); }
+function elapsed() { return log.sessionStart ? Math.floor((now()-log.sessionStart)/1000) : 0; }
+function fmtTime(s){ return Math.floor(s/60)>0 ? "~"+Math.floor(s/60)+" min" : "~"+s+"s"; }
+function fmtCO2(s) { return "~"+(s/60*0.7).toFixed(1)+"g CO2"; }
+function fmtMSS(s) { return Math.floor(s/60)+":"+(String(s%60).padStart(2,"0")); }
+function logBtn(n) { log.buttonInteractions.push({button:n, timestamp:new Date().toISOString(), elapsedSec:elapsed()}); }
+function showModal(id){ document.getElementById(id).classList.add("visible"); }
+function hideModal(id){ document.getElementById(id).classList.remove("visible"); }
 function $(id)     { return document.getElementById(id); }
 
-/* ---------------------------------------------------------
+/* =========================================================
+   PEXELS API
+   - Fetches best portrait MP4 link for each card query
+   - We request per_page=5 and pick the best file quality
+   - Results are cached in resolvedURLs[] so each card's
+     video element gets a direct browser-playable src
+   ========================================================= */
+async function fetchVideoURL(cardIndex) {
+  const query = encodeURIComponent(CARDS[cardIndex].query);
+  const url   = "https://api.pexels.com/videos/search?query=" + query
+              + "&per_page=5&orientation=portrait&size=medium";
+  try {
+    const res  = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.videos || data.videos.length === 0) return null;
+
+    /* pick a random video from top results for variety across participants */
+    const video = data.videos[Math.floor(Math.random() * data.videos.length)];
+
+    /* find best quality file: prefer HD (<=1080p height) portrait mp4 */
+    const files = (video.video_files || [])
+      .filter(f => f.file_type === "video/mp4" && f.link)
+      .sort((a, b) => {
+        /* prefer portrait orientation */
+        const aPort = a.height > a.width ? 1 : 0;
+        const bPort = b.height > b.width ? 1 : 0;
+        if (bPort !== aPort) return bPort - aPort;
+        /* then prefer 720p-1080p range */
+        const aScore = Math.abs(a.height - 900);
+        const bScore = Math.abs(b.height - 900);
+        return aScore - bScore;
+      });
+
+    return files.length > 0 ? files[0].link : null;
+  } catch (e) {
+    return null;   /* fail silently -- card shows emoji fallback */
+  }
+}
+
+/* lazy fetch -- called as user scrolls, fetches ahead of current card */
+const fetchedIndices = new Set();
+
+async function fetchVideosAround(centerIdx) {
+  /* fetch current card + next 5 cards ahead */
+  const toFetch = [];
+  for (let i = centerIdx; i < Math.min(centerIdx + 6, CARDS.length); i++) {
+    if (!fetchedIndices.has(i)) {
+      fetchedIndices.add(i);
+      toFetch.push(i);
+    }
+  }
+  if (toFetch.length === 0) return;
+
+  /* fetch in parallel */
+  await Promise.all(toFetch.map(async i => {
+    const url = await fetchVideoURL(i);
+    resolvedURLs[i] = url;
+    /* inject src into already-rendered video element */
+    if (url) {
+      const vid = $("vid-" + i);
+      if (vid && !vid.src) {
+        vid.src = url;
+        /* hide emoji scene when video is ready */
+        vid.addEventListener("canplay", () => {
+          const scene = $("vscene-" + i);
+          if (scene) scene.style.display = "none";
+        }, { once: true });
+      }
+    }
+  }));
+}
+
+
+
+/* =========================================================
    CODE SCREEN
-   --------------------------------------------------------- */
+   ========================================================= */
 const inputCode = $("input-code");
 const btnStart  = $("btn-start");
-const btnEnd    = $("btn-end-session");
 
 inputCode.addEventListener("input",   () => { btnStart.disabled = !inputCode.value.trim(); });
-inputCode.addEventListener("keydown", e  => { if (e.key === "Enter" && !btnStart.disabled) btnStart.click(); });
+inputCode.addEventListener("keydown", e  => { if(e.key==="Enter" && !btnStart.disabled) btnStart.click(); });
 
 btnStart.addEventListener("click", () => {
   log.participantCode = inputCode.value.trim().toUpperCase();
@@ -252,85 +215,64 @@ btnStart.addEventListener("click", () => {
   transitionTo("feed");
 });
 
-btnEnd.addEventListener("click", () => {
-  if (S.phase !== "feed") return;
-  logBtn("end-session");
-  log.sessionEndReason = "manual-end";
-  endSession();
-});
-
-/* ---------------------------------------------------------
-   BUILD FEED DOM
-   --------------------------------------------------------- */
+/* =========================================================
+   BUILD FEED
+   ========================================================= */
 function buildFeed() {
   const container = $("feed-container");
   container.innerHTML = "";
 
   CARDS.forEach((d, i) => {
-    const num    = i + 1;
-    const vidSrc = `videos/vid${num}.mp4`;
-    const bg     = GRADS[i % GRADS.length];
+    const bg  = GRADS[i % GRADS.length];
 
     const card = document.createElement("div");
-    card.className   = "video-card";
+    card.className     = "video-card";
     card.dataset.index = i;
 
-    /* We try to use a real video; if it 404s the onerror hides it */
-    card.innerHTML = `
-      <div class="vid-bg" id="vbg-${i}" style="background:${bg}">
-        <video
-          id="vid-${i}"
-          src="${vidSrc}"
-          loop muted playsinline
-          preload="none"
-          onerror="this.style.display='none'"
-        ></video>
-      </div>
-      <div class="vid-dim"></div>
-      <div class="vid-scene" id="vscene-${i}">
-        <div class="play-ring">&#9654;</div>
-        <span class="scene-emoji">${d.scene}</span>
-        <span class="scene-label">VIDEO ${num} / ${CARDS.length}</span>
-      </div>
-      <div class="card-overlay">
-        <div class="card-username">${d.user}</div>
-        <div class="card-caption">${d.caption} <span class="card-hashtags">${d.tags}</span></div>
-      </div>
-      <div class="card-sidebar">
-        <div class="side-btn" id="like-${i}" onclick="handleLike(${i})">
-          <div class="side-icon-wrap">
-            <div class="side-icon-circle">${SVG.thumbsUp}</div>
-          </div>
-          <span class="side-count" id="lc-${i}">${d.likes}</span>
-        </div>
-        <div class="side-btn" id="dislike-${i}" onclick="handleDislike(${i})">
-          <div class="side-icon-wrap">
-            <div class="side-icon-circle">${SVG.thumbsDown}</div>
-          </div>
-          <span class="side-count" id="dc-${i}">Nope</span>
-        </div>
-      </div>`;
+    card.innerHTML =
+      "<div class='vid-bg' style='background:" + bg + "'>" +
+        "<video id='vid-" + i + "' loop muted playsinline preload='none'></video>" +
+      "</div>" +
+      "<div class='vid-dim'></div>" +
+      "<div class='vid-scene' id='vscene-" + i + "' onclick='playCard(" + i + ")'> " +
+        "<div class='play-ring'>&#9654;</div>" +
+        "<span class='scene-emoji'>" + d.scene + "</span>" +
+        "<span class='scene-label'>VIDEO " + (i+1) + " / " + CARDS.length + "</span>" +
+      "</div>" +
+      "<div class='card-overlay'>" +
+        "<div class='card-username'>" + d.user + "</div>" +
+        "<div class='card-caption'>" + d.caption + " <span class='card-hashtags'>" + d.tags + "</span></div>" +
+      "</div>" +
+      "<div class='card-sidebar'>" +
+        "<div class='side-btn' id='like-" + i + "' onclick='handleLike(" + i + ")'>" +
+          "<div class='side-icon-wrap'><div class='side-icon-circle'>" + SVG.thumbsUp + "</div></div>" +
+          "<span class='side-count' id='lc-" + i + "'>" + d.likes + "</span>" +
+        "</div>" +
+        "<div class='side-btn' id='dislike-" + i + "' onclick='handleDislike(" + i + ")'>" +
+          "<div class='side-icon-wrap'><div class='side-icon-circle'>" + SVG.thumbsDown + "</div></div>" +
+          "<span class='side-count' id='dc-" + i + "'>Nope</span>" +
+        "</div>" +
+      "</div>";
 
     container.appendChild(card);
 
-    /* hide placeholder scene once real video loads */
-    const videoEl = card.querySelector("video");
-    videoEl.addEventListener("canplay", () => {
-      const scene = card.querySelector(".vid-scene");
-      if (scene) scene.style.display = "none";
-    });
+
   });
 }
 
-/* ---------------------------------------------------------
-   VIDEO AUTOPLAY (play visible card, pause others)
-   --------------------------------------------------------- */
+/* =========================================================
+   VIDEO SYNC -- play current card, pause all others
+   ========================================================= */
 function syncVideos(activeIdx) {
   CARDS.forEach((_, i) => {
-    const v = $(`vid-${i}`);
-    if (!v) return;
+    const v = $("vid-" + i);
+    if (!v || !v.src) return;
     if (i === activeIdx) {
-      v.play().catch(() => {});
+      if (!S.ecoOn) {
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
     } else {
       v.pause();
       v.currentTime = 0;
@@ -338,9 +280,9 @@ function syncVideos(activeIdx) {
   });
 }
 
-/* ---------------------------------------------------------
+/* =========================================================
    LIKE / DISLIKE
-   --------------------------------------------------------- */
+   ========================================================= */
 const likedSet    = new Set();
 const dislikedSet = new Set();
 
@@ -349,329 +291,294 @@ function triggerPop(id) {
   el.classList.remove("pop");
   void el.offsetWidth;
   el.classList.add("pop");
-  el.addEventListener("animationend", () => el.classList.remove("pop"), { once:true });
+  el.addEventListener("animationend", () => el.classList.remove("pop"), {once:true});
 }
 
 function handleLike(i) {
-  const likeBtn    = $(`like-${i}`);
-  const dislikeBtn = $(`dislike-${i}`);
+  const lb = $("like-"+i), db = $("dislike-"+i);
   if (likedSet.has(i)) {
-    likedSet.delete(i);
-    likeBtn.classList.remove("liked");
-    logBtn(`unlike-card-${i}`);
+    likedSet.delete(i); lb.classList.remove("liked"); logBtn("unlike-"+i);
   } else {
-    likedSet.add(i);
-    dislikedSet.delete(i);
-    likeBtn.classList.add("liked");
-    dislikeBtn.classList.remove("disliked");
-    triggerPop(`like-${i}`);
-    logBtn(`like-card-${i}`);
+    likedSet.add(i); dislikedSet.delete(i);
+    lb.classList.add("liked"); db.classList.remove("disliked");
+    triggerPop("like-"+i); logBtn("like-"+i);
   }
-  log.likedCards    = [...likedSet];
-  log.dislikedCards = [...dislikedSet];
+  log.likedCards = [...likedSet]; log.dislikedCards = [...dislikedSet];
 }
 
 function handleDislike(i) {
-  const dislikeBtn = $(`dislike-${i}`);
-  const likeBtn    = $(`like-${i}`);
+  const db = $("dislike-"+i), lb = $("like-"+i);
   if (dislikedSet.has(i)) {
-    dislikedSet.delete(i);
-    dislikeBtn.classList.remove("disliked");
-    logBtn(`un-dislike-card-${i}`);
+    dislikedSet.delete(i); db.classList.remove("disliked"); logBtn("undislike-"+i);
   } else {
-    dislikedSet.add(i);
-    likedSet.delete(i);
-    dislikeBtn.classList.add("disliked");
-    likeBtn.classList.remove("liked");
-    triggerPop(`dislike-${i}`);
-    logBtn(`dislike-card-${i}`);
+    dislikedSet.add(i); likedSet.delete(i);
+    db.classList.add("disliked"); lb.classList.remove("liked");
+    triggerPop("dislike-"+i); logBtn("dislike-"+i);
   }
-  log.likedCards    = [...likedSet];
-  log.dislikedCards = [...dislikedSet];
+  log.likedCards = [...likedSet]; log.dislikedCards = [...dislikedSet];
 }
 
-/* ---------------------------------------------------------
+/* =========================================================
    START FEED
-   --------------------------------------------------------- */
+   ========================================================= */
 function startFeed() {
   const feed = $("feed-container");
   feed.classList.add("active");
-  $("top-bar").style.display       = "flex";
-  $("session-timer").style.display = "block";
-  $("eco-badge").style.display     = "flex";
-  $("btn-end-session").style.display = "block";
+  $("top-bar").style.display              = "flex";
+  $("session-timer").style.display        = "block";
+  $("eco-badge").style.display            = "flex";
+  $("btn-end-session").style.display      = "block";
 
-  log.sessionStart  = now();
-  S.cardEnteredAt   = now();
-  S.currentCard     = 0;
-  log.cardsViewed   = 1;
+  log.sessionStart = now();
+  S.cardEnteredAt  = now();
+  S.currentCard    = 0;
+  log.cardsViewed  = 1;
 
-  loadPexelsSources();
+  /* start fetching first 6 videos immediately */
+  fetchVideosAround(0);
   syncVideos(0);
-  preloadAdjacentVideos(0);
 
-  /* countdown tick */
   S.timerInterval = setInterval(() => {
     S.elapsedSec    = elapsed();
-    const remaining = Math.max(0, SESSION_SECS - S.elapsedSec);
-    const timerEl   = $("session-timer");
-    timerEl.textContent = fmtMSS(remaining);
-    timerEl.classList.toggle("warning", remaining <= 60);
-    if (remaining === 0) {
-      log.sessionEndReason = "time-limit-8min";
-      endSession();
-    }
+    const rem       = Math.max(0, SESSION_SECS - S.elapsedSec);
+    const t         = $("session-timer");
+    t.textContent   = fmtMSS(rem);
+    t.classList.toggle("warning", rem <= 60);
+    if (rem === 0) { log.sessionEndReason = "time-limit-8min"; endSession(); }
   }, 1000);
 
-  feed.addEventListener("scroll", onScroll, { passive:true });
+  feed.addEventListener("scroll", onScroll, {passive:true});
 }
 
 function onScroll() {
-  const feed   = $("feed-container");
-  log.scrollPx = Math.round(feed.scrollTop);
-  const newIdx = Math.round(feed.scrollTop / window.innerHeight);
-
+  const feed = $("feed-container");
+  log.scrollPx   = Math.round(feed.scrollTop);
+  const newIdx   = Math.round(feed.scrollTop / window.innerHeight);
   if (newIdx !== S.currentCard) {
-    /* log time on previous card */
-    const spent = Math.floor((now() - S.cardEnteredAt) / 1000);
-    log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard] || 0) + spent;
-    log.cardsViewed = Math.max(log.cardsViewed, newIdx + 1);
+    const spent = Math.floor((now()-S.cardEnteredAt)/1000);
+    log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard]||0)+spent;
+    log.cardsViewed = Math.max(log.cardsViewed, newIdx+1);
     S.currentCard   = newIdx;
     S.cardEnteredAt = now();
+    fetchVideosAround(newIdx);
     syncVideos(newIdx);
-    preloadAdjacentVideos(newIdx);
     checkCues(newIdx);
   }
 }
 
-/* ---------------------------------------------------------
-   CUE TRIGGERS (card-index based)
-   --------------------------------------------------------- */
+/* =========================================================
+   CUES (card-index triggered)
+   ========================================================= */
 function checkCues(idx) {
   if (!S.cue1Done && idx >= CUE1_CARD) {
-    S.cue1Done         = true;
-    log.cue1.shown     = true;
-    log.cue1.shownAt   = new Date().toISOString();
+    S.cue1Done = true;
+    log.cue1.shown = true; log.cue1.shownAt = new Date().toISOString();
     log.timeBeforeFirstCueSec = elapsed();
-    showCue1();
-    return;
+    showCue1(); return;
   }
   if (!S.cue2Done && idx >= CUE2_CARD && !S.ecoOn) {
-    S.cue2Done         = true;
-    log.cue2.shown     = true;
-    log.cue2.shownAt   = new Date().toISOString();
+    S.cue2Done = true;
+    log.cue2.shown = true; log.cue2.shownAt = new Date().toISOString();
     showCue2();
   }
 }
 
 function showCue1() {
   const s = elapsed();
-  $("cue1-time").textContent  = fmtTime(s);
-  $("cue1-mins").textContent  = fmtTime(s);
-  $("cue1-co2").textContent   = fmtCO2(s);
-  $("bar1-time").style.width  = Math.min(85, s / 480 * 100) + "%";
-  $("bar1-co2").style.width   = Math.min(70, s / 480 * 80)  + "%";
+  $("cue1-time").textContent = fmtTime(s);
+  $("cue1-mins").textContent = fmtTime(s);
+  $("cue1-co2").textContent  = fmtCO2(s);
+  $("bar1-time").style.width = Math.min(85,s/480*100)+"%";
+  $("bar1-co2").style.width  = Math.min(70,s/480*80)+"%";
   showModal("modal-layer1");
 }
-
 function showCue2() {
   $("cue2-session").textContent = fmtCO2(elapsed());
   showModal("modal-layer2");
 }
 
-/* ---------------------------------------------------------
-   ECO BADGE  -- tap to open session insights
-   --------------------------------------------------------- */
+/* =========================================================
+   END SESSION BUTTON
+   ========================================================= */
+$("btn-end-session").addEventListener("click", () => {
+  logBtn("end-session-btn"); showModal("modal-confirm-end");
+});
+$("confirm-cancel").addEventListener("click", () => {
+  logBtn("confirm-cancel"); hideModal("modal-confirm-end");
+});
+$("confirm-end").addEventListener("click", () => {
+  logBtn("confirm-end"); hideModal("modal-confirm-end");
+  log.sessionEndReason = "researcher-ended"; endSession();
+});
+
+/* =========================================================
+   ECO BADGE
+   ========================================================= */
 $("eco-badge").addEventListener("click", () => {
   logBtn("eco-badge-tap");
-  log.badgeTaps.push({ at:new Date().toISOString(), ecoWas:S.ecoOn });
+  log.badgeTaps.push({at:new Date().toISOString(), ecoWas:S.ecoOn});
   openBadgeModal();
 });
 
 function openBadgeModal() {
-  const s   = elapsed();
-  const co2 = fmtCO2(s);
-
-  $("badge-body").textContent     = S.ecoOn ? "Your session with eco mode on" : "Your session with eco mode off";
-  $("badge-row-lbl").textContent  = S.ecoOn ? "Eco session" : "Your session";
-  $("badge-co2").textContent      = S.ecoOn ? "~0.8g CO2" : co2;
-  $("badge-bar").style.width      = S.ecoOn ? "27%" : Math.min(85, s / 480 * 100) + "%";
-  $("badge-bar").className        = "stat-fill" + (S.ecoOn ? " g" : "");
-
+  const s = elapsed();
+  $("badge-body").textContent    = S.ecoOn ? "Your session with eco mode on"  : "Your session with eco mode off";
+  $("badge-row-lbl").textContent = S.ecoOn ? "Eco session" : "Your session";
+  $("badge-co2").textContent     = S.ecoOn ? "~0.8g CO2" : fmtCO2(s);
+  $("badge-bar").style.width     = S.ecoOn ? "27%" : Math.min(85,s/480*100)+"%";
+  $("badge-bar").className       = "stat-fill"+(S.ecoOn ? " g" : "");
   $("badge-eco-compare").style.display = S.ecoOn ? "none" : "block";
-
-  const toggleBtn = $("badge-toggle-eco");
-  toggleBtn.textContent = S.ecoOn ? "Turn off Eco Mode" : "Turn on Eco Mode";
-  toggleBtn.className   = S.ecoOn ? "mbtn dark" : "mbtn grn";
-
+  const btn = $("badge-toggle-eco");
+  btn.textContent = S.ecoOn ? "Turn off Eco Mode" : "Turn on Eco Mode";
+  btn.className   = S.ecoOn ? "mbtn dark" : "mbtn grn";
   showModal("modal-badge");
 }
 
-$("skip-badge").addEventListener("click", () => {
-  logBtn("badge-skip"); hideModal("modal-badge");
-});
-$("badge-continue").addEventListener("click", () => {
-  logBtn("badge-continue"); hideModal("modal-badge");
-});
+$("skip-badge").addEventListener("click",       () => { logBtn("badge-skip");     hideModal("modal-badge"); });
+$("badge-continue").addEventListener("click",   () => { logBtn("badge-continue"); hideModal("modal-badge"); });
 $("badge-toggle-eco").addEventListener("click", () => {
   if (S.ecoOn) { disableEco(); logBtn("badge-eco-off"); }
   else         { enableEco();  logBtn("badge-eco-on");  }
   hideModal("modal-badge");
 });
 
-/* ---------------------------------------------------------
-   MODAL 1 (Layer 1 - Awareness)
-   --------------------------------------------------------- */
-$("skip1").addEventListener("click", () => {
-  logBtn("cue1-skip"); log.cue1.action = "skip"; hideModal("modal-layer1");
-});
-$("cue1-continue").addEventListener("click", () => {
-  logBtn("cue1-continue"); log.cue1.action = "continue"; hideModal("modal-layer1");
-});
+/* =========================================================
+   MODAL 1 (Layer 1)
+   ========================================================= */
+$("skip1").addEventListener("click", () => { logBtn("cue1-skip"); log.cue1.action="skip"; hideModal("modal-layer1"); });
+$("cue1-continue").addEventListener("click", () => { logBtn("cue1-continue"); log.cue1.action="continue"; hideModal("modal-layer1"); });
 $("cue1-tellmore").addEventListener("click", () => {
-  logBtn("cue1-tell-more"); log.cue1.action = "tell-more";
+  logBtn("cue1-tell-more"); log.cue1.action="tell-more";
   hideModal("modal-layer1");
-  /* immediately show Layer 2 */
-  S.cue2Done       = true;
-  log.cue2.shown   = true;
-  log.cue2.shownAt = new Date().toISOString();
+  S.cue2Done=true; log.cue2.shown=true; log.cue2.shownAt=new Date().toISOString();
   setTimeout(showCue2, 320);
 });
 
-/* ---------------------------------------------------------
-   MODAL 2 (Layer 2 - Eco offer)
-   --------------------------------------------------------- */
-$("skip2").addEventListener("click", () => {
-  logBtn("cue2-skip"); log.cue2.action = "skip"; hideModal("modal-layer2");
-});
-$("cue2-continue").addEventListener("click", () => {
-  logBtn("cue2-continue"); log.cue2.action = "continue"; hideModal("modal-layer2");
-});
-$("cue2-eco").addEventListener("click", () => {
-  logBtn("cue2-eco-on"); log.cue2.action = "eco-on";
-  enableEco(); hideModal("modal-layer2");
-});
+/* =========================================================
+   MODAL 2 (Layer 2)
+   ========================================================= */
+$("skip2").addEventListener("click", () => { logBtn("cue2-skip"); log.cue2.action="skip"; hideModal("modal-layer2"); });
+$("cue2-continue").addEventListener("click", () => { logBtn("cue2-continue"); log.cue2.action="continue"; hideModal("modal-layer2"); });
+$("cue2-eco").addEventListener("click", () => { logBtn("cue2-eco-on"); log.cue2.action="eco-on"; enableEco(); hideModal("modal-layer2"); });
 
-/* ---------------------------------------------------------
+/* =========================================================
    ECO MODE
-   --------------------------------------------------------- */
+   ========================================================= */
 function enableEco() {
   S.ecoOn = true;
-  if (!log.ecoModeEnabled) {
-    log.ecoModeEnabled       = true;
-    log.ecoModeFirstTimestamp = new Date().toISOString();
-  }
+  if (!log.ecoModeEnabled) { log.ecoModeEnabled=true; log.ecoModeFirstTimestamp=new Date().toISOString(); }
   log.ecoModeToggleCount++;
   $("eco-badge").className         = "eco-on";
   $("eco-label").textContent       = "Eco Mode On";
   $("feed-container").style.filter = "brightness(.87) saturate(.62)";
+  const v = $("vid-" + S.currentCard);
+if (v) v.pause();
 }
-
 function disableEco() {
-  S.ecoOn = false;
-  log.ecoModeToggleCount++;
+  S.ecoOn = false; log.ecoModeToggleCount++;
   $("eco-badge").className         = "eco-off";
   $("eco-label").textContent       = "Eco Mode Off";
   $("feed-container").style.filter = "";
+  const v = $("vid-" + S.currentCard);
+if (v && v.src) v.play().catch(() => {});
 }
 
-/* ---------------------------------------------------------
+/* =========================================================
    END SESSION
-   --------------------------------------------------------- */
+   ========================================================= */
 function endSession() {
-  if (S.phase === "end") return;
+  if (S.phase==="end") return;
   S.phase = "end";
   clearInterval(S.timerInterval);
-
-  /* log remaining time on current card */
-  const spent = Math.floor((now() - S.cardEnteredAt) / 1000);
-  log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard] || 0) + spent;
-
-  log.sessionEnd      = new Date().toISOString();
-  log.totalTimeSec    = elapsed();
-  log.ecoModeOnAtEnd  = S.ecoOn;
+  const spent = Math.floor((now()-S.cardEnteredAt)/1000);
+  log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard]||0)+spent;
+  log.sessionEnd    = new Date().toISOString();
+  log.totalTimeSec  = elapsed();
+  log.ecoModeOnAtEnd = S.ecoOn;
   if (!log.sessionEndReason) log.sessionEndReason = "end-of-feed";
-
   transitionTo("end");
 }
 
-/* ---------------------------------------------------------
-   SCREEN TRANSITIONS
-   --------------------------------------------------------- */
+/* =========================================================
+   TRANSITIONS
+   ========================================================= */
 function transitionTo(phase) {
   S.phase = phase;
-
-  /* hide everything */
-  ["screen-code", "screen-end"].forEach(id => $(id).classList.add("hidden"));
+  ["screen-code","screen-end"].forEach(id => $(id).classList.add("hidden"));
   $("feed-container").classList.remove("active");
-  $("top-bar").style.display        = "none";
-  $("session-timer").style.display  = "none";
-  $("eco-badge").style.display      = "none";
+  $("top-bar").style.display         = "none";
+  $("session-timer").style.display   = "none";
+  $("eco-badge").style.display       = "none";
   $("btn-end-session").style.display = "none";
 
-  if (phase === "code") {
-    $("screen-code").classList.remove("hidden");
-  } else if (phase === "feed") {
-    buildFeed();
-    startFeed();
-  } else if (phase === "end") {
-    renderLog();
-    $("screen-end").classList.remove("hidden");
-  }
+  if (phase==="code")  { $("screen-code").classList.remove("hidden"); }
+  else if (phase==="feed") { buildFeed(); startFeed(); }
+  else if (phase==="end")  { renderLog(); $("screen-end").classList.remove("hidden"); }
 }
 
-/* ---------------------------------------------------------
-   LOG RENDER + EXPORT
-   --------------------------------------------------------- */
+function playCard(i) {
+  const v = $("vid-" + i);
+  if (!v) return;
+  if (v.paused) {
+    v.play().catch(() => {});
+    $("vscene-" + i).style.display = "none";
+  } else {
+    v.pause();
+    $("vscene-" + i).style.display = "flex";
+  }
+  logBtn("manual-play-card-" + i);
+}
+/* =========================================================
+   LOG + EXPORT
+   ========================================================= */
 function renderLog() {
-  const output = {
-    participantCode:          log.participantCode,
-    sessionStart:             log.sessionStart ? new Date(log.sessionStart).toISOString() : null,
-    sessionEnd:               log.sessionEnd,
-    sessionEndReason:         log.sessionEndReason,
-    totalTimeSec:             log.totalTimeSec,
-    cardsViewed:              log.cardsViewed,
-    scrollPx:                 log.scrollPx,
-    timeBeforeFirstCueSec:    log.timeBeforeFirstCueSec,
-    timePerCard:              log.timePerCard,
-    likedCards:               log.likedCards,
-    dislikedCards:            log.dislikedCards,
-    ecoModeEnabled:           log.ecoModeEnabled,
-    ecoModeFirstTimestamp:    log.ecoModeFirstTimestamp,
-    ecoModeToggleCount:       log.ecoModeToggleCount,
-    ecoModeOnAtEnd:           log.ecoModeOnAtEnd,
-    cue1:                     log.cue1,
-    cue2:                     log.cue2,
-    badgeTaps:                log.badgeTaps,
-    buttonInteractions:       log.buttonInteractions,
+  const out = {
+    participantCode: log.participantCode,
+    sessionStart: log.sessionStart ? new Date(log.sessionStart).toISOString() : null,
+    sessionEnd: log.sessionEnd,
+    sessionEndReason: log.sessionEndReason,
+    totalTimeSec: log.totalTimeSec,
+    cardsViewed: log.cardsViewed,
+    scrollPx: log.scrollPx,
+    timeBeforeFirstCueSec: log.timeBeforeFirstCueSec,
+    timePerCard: log.timePerCard,
+    likedCards: log.likedCards,
+    dislikedCards: log.dislikedCards,
+    ecoModeEnabled: log.ecoModeEnabled,
+    ecoModeFirstTimestamp: log.ecoModeFirstTimestamp,
+    ecoModeToggleCount: log.ecoModeToggleCount,
+    ecoModeOnAtEnd: log.ecoModeOnAtEnd,
+    cue1: log.cue1,
+    cue2: log.cue2,
+    badgeTaps: log.badgeTaps,
+    buttonInteractions: log.buttonInteractions,
   };
-  $("log-output").textContent = JSON.stringify(output, null, 2);
+  $("log-output").textContent = JSON.stringify(out, null, 2);
 }
 
 $("btn-copy").addEventListener("click", () => {
   navigator.clipboard.writeText($("log-output").textContent).then(() => {
-    const b = $("btn-copy");
-    const original = b.textContent;
+    const b = $("btn-copy"), orig = b.textContent;
     b.textContent = "Copied!";
-    setTimeout(() => { b.textContent = original; }, 2000);
+    setTimeout(() => { b.textContent = orig; }, 2000);
   });
 });
 
 $("btn-download").addEventListener("click", () => {
-  const fileName = `session-log-${log.participantCode || 'anon'}-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
-  const blob = new Blob([$("log-output").textContent], { type: 'application/json' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  URL.revokeObjectURL(link.href);
-  document.body.removeChild(link);
+  const name = "session-" + (log.participantCode||"anon") + "-" + Date.now() + ".json";
+  const blob = new Blob([$("log-output").textContent], {type:"application/json"});
+  const a    = document.createElement("a");
+  a.href     = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
 });
 
 $("btn-restart").addEventListener("click", () => location.reload());
 
-/* ---------------------------------------------------------
+/* =========================================================
    INIT
-   --------------------------------------------------------- */
+   ========================================================= */
 transitionTo("code");
