@@ -42,15 +42,6 @@
   <button id="btn-end-session" style="display:none;">&#x2715; End</button>
 
 
-  <!-- TikTok-style top tab bar -->
-  <div id="top-bar" style="display:none;">
-    <div class="top-tabs">
-      <span class="top-tab">Following</span>
-      <span class="top-tab active">For You</span>
-      <span class="top-tab">LIVE</span>
-    </div>
-  </div>
-
   
 
   <!-- Confirm end modal -->
@@ -78,8 +69,9 @@
       <div class="modal-leaf">🌿</div>
       <div class="modal-title">Hi!</div>
       <div class="modal-body">
-        You have been scrolling for <strong id="cue1-time">a few minutes</strong>.
-        Videos loading automatically in your feed use data centre energy with every scroll.
+        You've scrolled past 8 videos that started playing automatically for <strong id="cue1-time">a few minutes</strong>.
+        Videos that load and play automatically use energy and contribute to digital carbon emissions.
+        Would you like to reduce unnecessary video loading?
       </div>
       <div class="stat-row">
         <span class="stat-val" id="cue1-mins">~1 min</span>
@@ -87,7 +79,7 @@
       </div>
       <div class="stat-bar"><div class="stat-fill" id="bar1-time" style="width:20%"></div></div>
       <div class="stat-row">
-        <span class="stat-val" id="cue1-co2">~0.7g</span>
+        <span class="stat-val" id="cue1-co2">~2.5g</span>
         <span class="stat-lbl">CO2 estimated</span>
       </div>
       <div class="stat-bar"><div class="stat-fill" id="bar1-co2" style="width:15%"></div></div>
@@ -107,18 +99,18 @@
       <div class="modal-leaf">🌿</div>
       <div class="modal-title">Live session insights</div>
       <div class="modal-body">
-        Every video loaded, every refresh — it adds up.
-        Eco mode helps reduce your digital carbon impact while you scroll.
+        Eco Mode reduces automatic video loading while you scroll.
+      Instead of loading and playing every video automatically, videos are shown with their thumbnail and caption. Videos only load when you choose to play them.
       </div>
       <div class="eco-compare">
         <div class="eco-row">
           <span class="eco-lbl">Your session</span>
-          <span class="eco-val" id="cue2-session">~2.1g CO2</span>
+          <span class="eco-val" id="cue2-session">~4.5g CO2</span>
         </div>
         <div class="stat-bar"><div class="stat-fill" style="width:70%"></div></div>
         <div class="eco-row">
           <span class="eco-lbl">With eco mode</span>
-          <span class="eco-val">~0.8g</span>
+          <span class="eco-val">~1.5g</span>
         </div>
         <div class="stat-bar"><div class="stat-fill g" style="width:27%"></div></div>
       </div>
