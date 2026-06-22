@@ -248,7 +248,8 @@ function buildFeed() {
         "<span class='scene-label'>VIDEO " + (i+1) + " / " + CARDS.length + "</span>" +
       "</div>" +
       "<div class='card-overlay'>" +
-        "<div class='card-username'>" + d.clipNumber + "</div>" +
+        "<div class='card-username'>"+d.user+"</div>" +
+        "<div class='card-caption'>"+d.caption+" <span class='card-hashtags'>"+d.tags+"</span></div>" +
       "</div>" +
       "<div class='card-sidebar'>" +
         "<div class='side-btn' id='like-" + i + "' onclick='handleLike(" + i + ")'>" +
