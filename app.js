@@ -74,6 +74,8 @@ const GRADS = [
 
 /* will hold the resolved streamable mp4 links after API fetch */
 const resolvedURLs = new Array(CARDS.length).fill(null);
+const resolvedThumbs = new Array(CARDS.length).fill(null);
+
 
 /* SVG icons */
 const SVG = {
@@ -159,7 +161,10 @@ async function fetchVideoURL(cardIndex) {
         return aScore - bScore;
       });
 
-    return files.length > 0 ? files[0].link : null;
+    return {
+     videoUrl: files.length > 0 ? files[0].link : null,
+      thumbUrl: video.image || null
+      };
   } catch (e) {
     return null;   /* fail silently -- card shows emoji fallback */
   }
@@ -180,21 +185,25 @@ async function fetchVideosAround(centerIdx) {
   if (toFetch.length === 0) return;
 
   /* fetch in parallel */
+  
   await Promise.all(toFetch.map(async i => {
-    const url = await fetchVideoURL(i);
-    resolvedURLs[i] = url;
-    /* inject src into already-rendered video element */
-    if (url) {
-      const vid = $("vid-" + i);
-      if (vid && !vid.src) {
-        vid.src = url;
-        /* hide emoji scene when video is ready */
-        vid.addEventListener("canplay", () => {
-          const scene = $("vscene-" + i);
-          if (scene) scene.style.display = "none";
-        }, { once: true });
-      }
+    const result = await fetchVideoURL(i);
+    if (result) {
+    resolvedURLs[i]  = result.videoUrl;
+    resolvedThumbs[i] = result.thumbUrl;
+    const vid = $("vid-" + i);
+    if (vid && !vid.src && result.videoUrl) {
+      vid.src = result.videoUrl;
+      vid.addEventListener("canplay", () => {
+        const scene = $("vscene-" + i);
+        if (scene) scene.style.display = "none";
+      }, { once: true });
     }
+    /* set the thumbnail as poster so it shows before/instead of play icon */
+    if (vid && result.thumbUrl) {
+      vid.poster = result.thumbUrl;
+    }
+  }
   }));
 }
 
@@ -235,18 +244,15 @@ function buildFeed() {
       "</div>" +
       "<div class='vid-dim'></div>" +
       "<div class='vid-scene' id='vscene-" + i + "' onclick='playCard(" + i + ")'> " +
-        "<div class='play-ring'>&#9654;</div>" +
-        "<span class='scene-emoji'>" + d.scene + "</span>" +
+        "<div class='play-ring'>&#9654;</div>"  +
         "<span class='scene-label'>VIDEO " + (i+1) + " / " + CARDS.length + "</span>" +
       "</div>" +
       "<div class='card-overlay'>" +
-        "<div class='card-username'>" + d.user + "</div>" +
-        "<div class='card-caption'>" + d.caption + " <span class='card-hashtags'>" + d.tags + "</span></div>" +
+        "<div class='card-username'>" + d.clipNumber + "</div>" +
       "</div>" +
       "<div class='card-sidebar'>" +
         "<div class='side-btn' id='like-" + i + "' onclick='handleLike(" + i + ")'>" +
           "<div class='side-icon-wrap'><div class='side-icon-circle'>" + SVG.thumbsUp + "</div></div>" +
-          "<span class='side-count' id='lc-" + i + "'>" + d.likes + "</span>" +
         "</div>" +
         "<div class='side-btn' id='dislike-" + i + "' onclick='handleDislike(" + i + ")'>" +
           "<div class='side-icon-wrap'><div class='side-icon-circle'>" + SVG.thumbsDown + "</div></div>" +
@@ -324,7 +330,6 @@ function handleDislike(i) {
 function startFeed() {
   const feed = $("feed-container");
   feed.classList.add("active");
-  $("top-bar").style.display              = "flex";
   $("session-timer").style.display        = "block";
   $("eco-badge").style.display            = "flex";
   $("btn-end-session").style.display      = "block";
@@ -506,7 +511,6 @@ function transitionTo(phase) {
   S.phase = phase;
   ["screen-code","screen-end"].forEach(id => $(id).classList.add("hidden"));
   $("feed-container").classList.remove("active");
-  $("top-bar").style.display         = "none";
   $("session-timer").style.display   = "none";
   $("eco-badge").style.display       = "none";
   $("btn-end-session").style.display = "none";
