@@ -64,28 +64,45 @@
        MODAL 1 — Layer 1: Awareness (fires on card 4)
        ===================================================== -->
   <div class="modal-overlay" id="modal-layer1">
-    <div class="modal-card">
+    <div class="modal-card cue-card">
       <span class="modal-skip" id="skip1">Skip</span>
       <div class="modal-leaf">🌿</div>
-      <div class="modal-title">Hi!</div>
+
+      <div class="cue-hero">
+        
+        <div class="cue-headline">
+          Hi!
+        </div>
+      </div>
+
       <div class="modal-body">
-        You've scrolled past 8 videos that started playing automatically for <strong id="cue1-time">a few minutes</strong>.
-        Videos that load and play automatically use energy and contribute to digital carbon emissions.
-        Would you like to reduce unnecessary video loading?
+        You've scrolled past <strong id="cue1-count">8</strong> videos that load and play automatically and use <strong>energy</strong> and contribute to <strong>digital carbon emissions</strong>.
       </div>
+
       <div class="stat-row">
-        <span class="stat-val" id="cue1-mins">~1 min</span>
-        <span class="stat-lbl">scrolled so far</span>
+        <span class="stat-val" id="cue1-co2">~0.3g CO2</span>
+        <span class="stat-lbl">estimated emissions so far</span>
       </div>
-      <div class="stat-bar"><div class="stat-fill" id="bar1-time" style="width:20%"></div></div>
-      <div class="stat-row">
-        <span class="stat-val" id="cue1-co2">~2.5g</span>
-        <span class="stat-lbl">CO2 estimated</span>
+      <div class="stat-bar"><div class="stat-fill" id="bar1-co2" style="width:20%"></div></div>
+      <!--<div class="cue-stats-box">
+        <div class="cue-stats-label">So far in this session</div>
+        <div class="cue-stats-row">
+    
+          <div class="cue-stat">
+            <div class="cue-stat-val" id="cue1-co2">~0.3g CO2</div>
+            <div class="cue-stat-label">estimated carbon emissions</div>
+          </div>
+         
+        </div>
+      </div>-->
+<div class="cue-callout">
+  <span class="cue-callout-emoji">💡</span>
+        <span>Every scroll has an impact. Would you like to reduce unnecessary video loading?</span>
       </div>
-      <div class="stat-bar"><div class="stat-fill" id="bar1-co2" style="width:15%"></div></div>
+
       <div class="modal-btns">
-        <button class="mbtn"      id="cue1-continue">Continue Scrolling</button>
-        <button class="mbtn dark" id="cue1-tellmore">Tell Me More</button>
+        <button class="mbtn"      id="cue1-continue">Not Now</button>
+        <button class="mbtn dark" id="cue1-tellmore">Learn More</button>
       </div>
     </div>
   </div>
@@ -97,25 +114,39 @@
     <div class="modal-card">
       <span class="modal-skip" id="skip2">Skip</span>
       <div class="modal-leaf">🌿</div>
-      <div class="modal-title">Live session insights</div>
+      <div class="modal-title">Eco Mode helps you save energy while you scroll.</div>
       <div class="modal-body">
-        Eco Mode reduces automatic video loading while you scroll.
+      
       Instead of loading and playing every video automatically, videos are shown with their thumbnail and caption. Videos only load when you choose to play them.
       </div>
       <div class="eco-compare">
         <div class="eco-row">
           <span class="eco-lbl">Your session</span>
-          <span class="eco-val" id="cue2-session">~4.5g CO2</span>
+          <span class="eco-val" id="cue2-session">~0.3g CO2</span>
         </div>
-        <div class="stat-bar"><div class="stat-fill" style="width:70%"></div></div>
+        <div class="stat-bar"><div class="stat-fill" id="cue2-bar-real" style="width:50%"></div></div>
         <div class="eco-row">
           <span class="eco-lbl">With eco mode</span>
-          <span class="eco-val">~1.5g</span>
+          <span class="eco-val" id="cue2-eco-val">~0.1g CO2</span>
         </div>
-        <div class="stat-bar"><div class="stat-fill g" style="width:27%"></div></div>
+        <div class="stat-bar"><div class="stat-fill g" id="cue2-bar-eco" style="width:15%"></div></div>
+      </div>
+      <div class="cue2-benefits">
+        <div class="cue2-benefit">
+          <span class="cue2-benefit-icon">🌱</span>
+          <span class="cue2-benefit-label">Uses less energy</span>
+        </div>
+        <div class="cue2-benefit">
+          <span class="cue2-benefit-icon">🍃</span>
+          <span class="cue2-benefit-label">Reduces digital carbon emissions</span>
+        </div>
+        <div class="cue2-benefit">
+          <span class="cue2-benefit-icon">📶</span>
+          <span class="cue2-benefit-label">Helps you scroll sustainably</span>
+        </div>
       </div>
       <div class="modal-btns">
-        <button class="mbtn"     id="cue2-continue">Continue Scrolling</button>
+        <button class="mbtn"     id="cue2-continue">Not Now</button>
         <button class="mbtn grn" id="cue2-eco">Turn on Eco Mode</button>
       </div>
     </div>
@@ -135,14 +166,14 @@
           <span class="eco-lbl" id="badge-row-lbl">Your session</span>
           <span class="eco-val" id="badge-co2">~1.4g CO2</span>
         </div>
-        <div class="stat-bar"><div class="stat-fill" id="badge-bar" style="width:50%"></div></div>
+        <div class="stat-bar"><div class="stat-fill" id="badge-bar"  style="width:50%"></div></div>
         <!-- only shown when eco is OFF, to illustrate potential saving -->
         <div id="badge-eco-compare">
           <div class="eco-row">
             <span class="eco-lbl">With eco mode</span>
             <span class="eco-val">~0.8g</span>
           </div>
-          <div class="stat-bar"><div class="stat-fill g" style="width:27%"></div></div>
+          <div class="stat-bar"><div class="stat-fill g" id="badge-bar-eco"  style="width:27%"></div></div>
         </div>
       </div>
       <div class="modal-btns">
