@@ -90,6 +90,8 @@ const SESSION_SECS = 8 * 60;
 const CUE1_CARD    = 8;
 const CUE2_CARD    = 14;
 
+
+
 /* =========================================================
    BEHAVIORAL LOG
    ========================================================= */
@@ -120,7 +122,14 @@ let S = {
 function now()     { return Date.now(); }
 function elapsed() { return log.sessionStart ? Math.floor((now()-log.sessionStart)/1000) : 0; }
 function fmtTime(s){ return Math.floor(s/60)>0 ? "~"+Math.floor(s/60)+" min" : "~"+s+"s"; }
-function fmtCO2(s) { return "~"+(s/60*0.7).toFixed(1)+"g CO2"; }
+function fmtCO2(grams) { return "~" + grams.toFixed(2) + "g CO2"; }
+const GRAMS_PER_AUTOPLAYED_VIDEO = 0.2;
+const ECO_MODE_SAVING_RATIO      = 0.3;
+
+function autoPlayedCount() { return S.currentCard + 1; }
+function totalCO2Grams()   { return autoPlayedCount() * GRAMS_PER_AUTOPLAYED_VIDEO; }
+function ecoCO2Grams()     { return totalCO2Grams() * ECO_MODE_SAVING_RATIO; }
+
 function fmtMSS(s) { return Math.floor(s/60)+":"+(String(s%60).padStart(2,"0")); }
 function logBtn(n) { log.buttonInteractions.push({button:n, timestamp:new Date().toISOString(), elapsedSec:elapsed()}); }
 function showModal(id){ document.getElementById(id).classList.add("visible"); }
@@ -390,16 +399,18 @@ function checkCues(idx) {
 }
 
 function showCue1() {
-  const s = elapsed();
-  $("cue1-time").textContent = fmtTime(s);
-  $("cue1-mins").textContent = fmtTime(s);
-  $("cue1-co2").textContent  = fmtCO2(s);
-  $("bar1-time").style.width = Math.min(85,s/480*100)+"%";
-  $("bar1-co2").style.width  = Math.min(70,s/480*80)+"%";
+  $("cue1-count").textContent = autoPlayedCount();
+  $("cue1-co2").textContent   = fmtCO2(totalCO2Grams());
+  $("bar1-co2").style.width   = Math.min(85, autoPlayedCount() * 8) + "%";
   showModal("modal-layer1");
 }
 function showCue2() {
-  $("cue2-session").textContent = fmtCO2(elapsed());
+  const realPct = Math.min(85, autoPlayedCount() * 8);
+  const ecoPct  = realPct * ECO_MODE_SAVING_RATIO;
+  $("cue2-session").textContent = fmtCO2(totalCO2Grams());
+  $("cue2-eco-val").textContent = fmtCO2(ecoCO2Grams());
+  $("cue2-bar-real").style.width = realPct + "%";
+  $("cue2-bar-eco").style.width  = ecoPct + "%";
   showModal("modal-layer2");
 }
 
@@ -427,12 +438,14 @@ $("eco-badge").addEventListener("click", () => {
 });
 
 function openBadgeModal() {
-  const s = elapsed();
+  const realPct = Math.min(85, autoPlayedCount() * 8);
+  const ecoPct  = realPct * ECO_MODE_SAVING_RATIO;
   $("badge-body").textContent    = S.ecoOn ? "Your session with eco mode on"  : "Your session with eco mode off";
   $("badge-row-lbl").textContent = S.ecoOn ? "Eco session" : "Your session";
-  $("badge-co2").textContent     = S.ecoOn ? "~0.8g CO2" : fmtCO2(s);
-  $("badge-bar").style.width     = S.ecoOn ? "27%" : Math.min(85,s/480*100)+"%";
+  $("badge-co2").textContent     = S.ecoOn ? fmtCO2(ecoCO2Grams()) : fmtCO2(totalCO2Grams());
+  $("badge-bar").style.width     = (S.ecoOn ? ecoPct : realPct) + "%";
   $("badge-bar").className       = "stat-fill"+(S.ecoOn ? " g" : "");
+  $("badge-bar-eco").style.width = ecoPct + "%";
   $("badge-eco-compare").style.display = S.ecoOn ? "none" : "block";
   const btn = $("badge-toggle-eco");
   btn.textContent = S.ecoOn ? "Turn off Eco Mode" : "Turn on Eco Mode";

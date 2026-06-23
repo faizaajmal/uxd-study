@@ -492,3 +492,150 @@ html, body {
   font-size: 15px; font-weight: 600;
   cursor: pointer;
 }
+/* =========================================================
+   CUE 1 — redesigned card-based layer (matches reference)
+   ========================================================= */
+.cue-step-badge {
+  position: absolute; top: 16px; left: 16px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: var(--green);
+  font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.cue-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.cue-phone-icon {
+  flex-shrink: 0;
+  width: 52px; height: 72px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1a3a2a, #0d1f0d);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.cue-phone-play {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  color: #1a3a2a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  padding-left: 2px;
+}
+.cue-headline {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #111;
+}
+.cue-headline strong { color: var(--green); }
+
+.cue-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f0f9f0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+.cue-callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.cue-callout strong { color: var(--green); }
+
+.cue-stats-box {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.cue-stats-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.cue-stats-row {
+  display: flex;
+  gap: 12px;
+}
+.cue-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.cue-stat-icon {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.cue-stat-icon.blue { background: #e3f0ff; color: #3B82F6; }
+.cue-stat-icon.green { background: #e8f5e9; color: var(--green); }
+.cue-stat-value {
+  font-size: 19px;
+  font-weight: 800;
+  color: #111;
+}
+.cue-stat-label {
+  font-size: 12px;
+  color: #888;
+}
+
+.cue-question {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.cue2-benefits {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  background: #f0f9f0;
+  border-radius: 14px;
+  padding: 14px 10px;
+  margin-bottom: 16px;
+}
+.cue2-benefit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.cue2-benefit-icon {
+  font-size: 18px;
+}
+.cue2-benefit-label {
+  font-size: 11px;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mbtn.grn {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
