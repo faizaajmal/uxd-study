@@ -10,20 +10,34 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Inject Pexels API key into config.js
+      - name: Generate config.js safely
         run: |
-         cat <<EOF > config.js
-         const PEXELS_API_KEY = "${{ secrets.PEXELS_API_KEY }}";
-         const UNSPLASH_API_KEY = "${{ secrets.SHEETS_ENDPOINT }}";
-         EOF
+          node -e "
+            const fs = require('fs');
 
-         cat config.js
+            const config = {
+              PEXELS_API_KEY: process.env.PEXELS_API_KEY,
+              SHEETS_ENDPOINT: process.env.SHEETS_ENDPOINT
+            };
+
+            fs.writeFileSync(
+              'config.js',
+              'const CONFIG = ' + JSON.stringify(config, null, 2) + ';'
+            );
+          "
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          SHEETS_ENDPOINT: ${{ secrets.SHEETS_ENDPOINT }}
 
       - name: List files to confirm
         run: ls -la
+
+      - name: Show config for debugging
+        run: cat config.js
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
