@@ -60,7 +60,6 @@ const CARDS = [
   { user:"@deepseadive",    caption:"Found this shipwreck 40 metres down",           tags:"#diving #ocean",            likes:"1.3M", scene:"🤿",  query:"scuba diving underwater ocean" },
 ];
 
-/* gradient shown while video loads or as fallback */
 const GRADS = [
   "linear-gradient(160deg,#1a3a2a,#0d1f0d,#2a1a0d)",
   "linear-gradient(160deg,#1a1a3a,#0d0d2a,#1a0d2a)",
@@ -72,12 +71,9 @@ const GRADS = [
   "linear-gradient(160deg,#3a1a2a,#2a0d1a,#1a2a3a)",
 ];
 
-/* will hold the resolved streamable mp4 links after API fetch */
 const resolvedURLs = new Array(CARDS.length).fill(null);
 const resolvedThumbs = new Array(CARDS.length).fill(null);
 
-
-/* SVG icons */
 const SVG = {
   thumbsUp: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 20h2a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H2v9zm18.5-9H14V7a3 3 0 0 0-3-3h-.5L8 10.5V20h9.5l2.5-6.5.5-1.5c0-.83-.67-1.5-1.5-1.5z"/></svg>',
   thumbsDown: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 4h-2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2V4zM3.5 13H10v4a3 3 0 0 0 3 3h.5l2.5-6.5V4H7l-2.5 6.5-.5 1.5c0 .83.67 1.5 1.5 1.5z"/></svg>',
@@ -86,18 +82,18 @@ const SVG = {
 /* =========================================================
    CONSTANTS
    ========================================================= */
-const SESSION_SECS = 8 * 60;
-const CUE1_CARD    = 8;
-const CUE2_CARD    = 14;
-
-
+const SESSION_SECS = 18 * 60;
+const CUE1_CARD    = 3;
+const CUE2_CARD    = 20;
+const SKIP_THRESHOLD_SEC = 1;
+const GRAMS_PER_AUTOPLAYED_VIDEO = 0.2;
 
 /* =========================================================
    BEHAVIORAL LOG
    ========================================================= */
 const log = {
-  participantCode:"", sessionStart:null, sessionEnd:null,
-  sessionEndReason:"", totalTimeSec:0, cardsViewed:0, scrollPx:0,
+  participantCode:"", studyCondition:"", sessionStart:null, sessionEnd:null,
+  sessionEndReason:"", totalTimeSec:0, cardsViewed:0, scrollPx:0, skippedCardsBeforeCue1: 0,
   timeBeforeFirstCueSec:null, timePerCard:{},
   likedCards:[], dislikedCards:[], buttonInteractions:[],
   ecoModeEnabled:false, ecoModeFirstTimestamp:null,
@@ -116,20 +112,13 @@ let S = {
   timerInterval:null, elapsedSec:0,
 };
 
+let studyCondition = "control";
+
 /* =========================================================
    UTILITIES
    ========================================================= */
 function now()     { return Date.now(); }
 function elapsed() { return log.sessionStart ? Math.floor((now()-log.sessionStart)/1000) : 0; }
-function fmtTime(s){ return Math.floor(s/60)>0 ? "~"+Math.floor(s/60)+" min" : "~"+s+"s"; }
-function fmtCO2(grams) { return "~" + grams.toFixed(2) + "g CO2"; }
-const GRAMS_PER_AUTOPLAYED_VIDEO = 0.2;
-const ECO_MODE_SAVING_RATIO      = 0.3;
-
-function autoPlayedCount() { return S.currentCard + 1; }
-function totalCO2Grams()   { return autoPlayedCount() * GRAMS_PER_AUTOPLAYED_VIDEO; }
-function ecoCO2Grams()     { return totalCO2Grams() * ECO_MODE_SAVING_RATIO; }
-
 function fmtMSS(s) { return Math.floor(s/60)+":"+(String(s%60).padStart(2,"0")); }
 function logBtn(n) { log.buttonInteractions.push({button:n, timestamp:new Date().toISOString(), elapsedSec:elapsed()}); }
 function showModal(id){ document.getElementById(id).classList.add("visible"); }
@@ -137,11 +126,23 @@ function hideModal(id){ document.getElementById(id).classList.remove("visible");
 function $(id)     { return document.getElementById(id); }
 
 /* =========================================================
+   LIVE CO2 -- single source of truth for both popups
+   ========================================================= */
+function autoPlayedCount() { return S.currentCard + 1; }
+function totalCO2Grams()   { return autoPlayedCount() * GRAMS_PER_AUTOPLAYED_VIDEO; }
+function fmtCO2(grams)     { return grams.toFixed(1) + "g"; }
+
+function countSkippedCardsBeforeCue1() {
+  let skipped = 0;
+  for (let i = 0; i < CUE1_CARD; i++) {
+    const timeSpent = log.timePerCard[i] || 0;
+    if (timeSpent < SKIP_THRESHOLD_SEC) skipped++;
+  }
+  return skipped;
+}
+
+/* =========================================================
    PEXELS API
-   - Fetches best portrait MP4 link for each card query
-   - We request per_page=5 and pick the best file quality
-   - Results are cached in resolvedURLs[] so each card's
-     video element gets a direct browser-playable src
    ========================================================= */
 async function fetchVideoURL(cardIndex) {
   const query = encodeURIComponent(CARDS[cardIndex].query);
@@ -153,37 +154,31 @@ async function fetchVideoURL(cardIndex) {
     const data = await res.json();
     if (!data.videos || data.videos.length === 0) return null;
 
-    /* pick a random video from top results for variety across participants */
     const video = data.videos[Math.floor(Math.random() * data.videos.length)];
 
-    /* find best quality file: prefer HD (<=1080p height) portrait mp4 */
     const files = (video.video_files || [])
       .filter(f => f.file_type === "video/mp4" && f.link)
       .sort((a, b) => {
-        /* prefer portrait orientation */
         const aPort = a.height > a.width ? 1 : 0;
         const bPort = b.height > b.width ? 1 : 0;
         if (bPort !== aPort) return bPort - aPort;
-        /* then prefer 720p-1080p range */
         const aScore = Math.abs(a.height - 900);
         const bScore = Math.abs(b.height - 900);
         return aScore - bScore;
       });
 
     return {
-     videoUrl: files.length > 0 ? files[0].link : null,
+      videoUrl: files.length > 0 ? files[0].link : null,
       thumbUrl: video.image || null
-      };
+    };
   } catch (e) {
-    return null;   /* fail silently -- card shows emoji fallback */
+    return null;
   }
 }
 
-/* lazy fetch -- called as user scrolls, fetches ahead of current card */
 const fetchedIndices = new Set();
 
 async function fetchVideosAround(centerIdx) {
-  /* fetch current card + next 5 cards ahead */
   const toFetch = [];
   for (let i = centerIdx; i < Math.min(centerIdx + 6, CARDS.length); i++) {
     if (!fetchedIndices.has(i)) {
@@ -193,30 +188,36 @@ async function fetchVideosAround(centerIdx) {
   }
   if (toFetch.length === 0) return;
 
-  /* fetch in parallel */
-  
   await Promise.all(toFetch.map(async i => {
     const result = await fetchVideoURL(i);
     if (result) {
-    resolvedURLs[i]  = result.videoUrl;
-    resolvedThumbs[i] = result.thumbUrl;
-    const vid = $("vid-" + i);
-    if (vid && !vid.src && result.videoUrl) {
-      vid.src = result.videoUrl;
-      vid.addEventListener("canplay", () => {
-        const scene = $("vscene-" + i);
-        if (scene) scene.style.display = "none";
-      }, { once: true });
+      resolvedURLs[i]  = result.videoUrl;
+      resolvedThumbs[i] = result.thumbUrl;
+      const vid = $("vid-" + i);
+      if (vid && !vid.src && result.videoUrl) {
+        vid.src = result.videoUrl;
+        vid.addEventListener("canplay", () => {
+          const scene = $("vscene-" + i);
+          if (scene) scene.style.display = "none";
+        }, { once: true });
+      }
+      if (vid && result.thumbUrl) {
+        vid.poster = result.thumbUrl;
+      }
     }
-    /* set the thumbnail as poster so it shows before/instead of play icon */
-    if (vid && result.thumbUrl) {
-      vid.poster = result.thumbUrl;
-    }
-  }
   }));
 }
 
-
+/* =========================================================
+   CONDITION TOGGLE
+   ========================================================= */
+document.querySelectorAll(".condition-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".condition-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    studyCondition = btn.dataset.cond;
+  });
+});
 
 /* =========================================================
    CODE SCREEN
@@ -229,6 +230,7 @@ inputCode.addEventListener("keydown", e  => { if(e.key==="Enter" && !btnStart.di
 
 btnStart.addEventListener("click", () => {
   log.participantCode = inputCode.value.trim().toUpperCase();
+  log.studyCondition = studyCondition;
   logBtn("start");
   transitionTo("feed");
 });
@@ -271,13 +273,11 @@ function buildFeed() {
       "</div>";
 
     container.appendChild(card);
-
-
   });
 }
 
 /* =========================================================
-   VIDEO SYNC -- play current card, pause all others
+   VIDEO SYNC
    ========================================================= */
 function syncVideos(activeIdx) {
   CARDS.forEach((_, i) => {
@@ -340,16 +340,15 @@ function handleDislike(i) {
 function startFeed() {
   const feed = $("feed-container");
   feed.classList.add("active");
-  $("session-timer").style.display        = "block";
-  $("eco-badge").style.display            = "flex";
-  $("btn-end-session").style.display      = "block";
+  $("session-timer").style.display   = "block";
+  $("eco-badge").style.display       = "none";
+  $("btn-end-session").style.display = "block";
 
   log.sessionStart = now();
   S.cardEnteredAt  = now();
   S.currentCard    = 0;
   log.cardsViewed  = 1;
 
-  /* start fetching first 6 videos immediately */
   fetchVideosAround(0);
   syncVideos(0);
 
@@ -359,7 +358,7 @@ function startFeed() {
     const t         = $("session-timer");
     t.textContent   = fmtMSS(rem);
     t.classList.toggle("warning", rem <= 60);
-    if (rem === 0) { log.sessionEndReason = "time-limit-8min"; endSession(); }
+    if (rem === 0) { log.sessionEndReason = "time-limit-session"; endSession(); }
   }, 1000);
 
   feed.addEventListener("scroll", onScroll, {passive:true});
@@ -382,9 +381,10 @@ function onScroll() {
 }
 
 /* =========================================================
-   CUES (card-index triggered)
+   CUES (card-index triggered, experiment condition only)
    ========================================================= */
 function checkCues(idx) {
+  if (studyCondition !== "experiment") return;
   if (!S.cue1Done && idx >= CUE1_CARD) {
     S.cue1Done = true;
     log.cue1.shown = true; log.cue1.shownAt = new Date().toISOString();
@@ -399,18 +399,31 @@ function checkCues(idx) {
 }
 
 function showCue1() {
-  $("cue1-count").textContent = autoPlayedCount();
-  $("cue1-co2").textContent   = fmtCO2(totalCO2Grams());
-  $("bar1-co2").style.width   = Math.min(85, autoPlayedCount() * 8) + "%";
+  log.skippedCardsBeforeCue1 = countSkippedCardsBeforeCue1();
+  const co2 = totalCO2Grams();
+
+  $("eco-badge").style.display = "flex";
+
+  $("cue1-count").textContent   = autoPlayedCount();
+  $("cue1-co2-val").textContent = fmtCO2(co2);
   showModal("modal-layer1");
 }
+
 function showCue2() {
-  const realPct = Math.min(85, autoPlayedCount() * 8);
-  const ecoPct  = realPct * ECO_MODE_SAVING_RATIO;
-  $("cue2-session").textContent = fmtCO2(totalCO2Grams());
-  $("cue2-eco-val").textContent = fmtCO2(ecoCO2Grams());
-  $("cue2-bar-real").style.width = realPct + "%";
-  $("cue2-bar-eco").style.width  = ecoPct + "%";
+  const co2 = totalCO2Grams();
+   const ecoCo2  = co2 * 0.3;
+  //$("cue2-co2").textContent = fmtCO2(co2);
+   $("cue2-std-co2").textContent = fmtCO2(co2);
+  $("cue2-eco-co2").textContent = fmtCO2(ecoCo2);
+
+  const btn = $("cue2-eco-toggle");
+  if (S.ecoOn) {
+    btn.textContent = "Turn off Eco Mode";
+    btn.className   = "mbtn dark";
+  } else {
+    btn.textContent = "Enable Eco Mode";
+    btn.className   = "mbtn grn";
+  }
   showModal("modal-layer2");
 }
 
@@ -429,36 +442,12 @@ $("confirm-end").addEventListener("click", () => {
 });
 
 /* =========================================================
-   ECO BADGE
+   ECO BADGE -- reuses Cue 2 modal
    ========================================================= */
 $("eco-badge").addEventListener("click", () => {
   logBtn("eco-badge-tap");
-  log.badgeTaps.push({at:new Date().toISOString(), ecoWas:S.ecoOn});
-  openBadgeModal();
-});
-
-function openBadgeModal() {
-  const realPct = Math.min(85, autoPlayedCount() * 8);
-  const ecoPct  = realPct * ECO_MODE_SAVING_RATIO;
-  $("badge-body").textContent    = S.ecoOn ? "Your session with eco mode on"  : "Your session with eco mode off";
-  $("badge-row-lbl").textContent = S.ecoOn ? "Eco session" : "Your session";
-  $("badge-co2").textContent     = S.ecoOn ? fmtCO2(ecoCO2Grams()) : fmtCO2(totalCO2Grams());
-  $("badge-bar").style.width     = (S.ecoOn ? ecoPct : realPct) + "%";
-  $("badge-bar").className       = "stat-fill"+(S.ecoOn ? " g" : "");
-  $("badge-bar-eco").style.width = ecoPct + "%";
-  $("badge-eco-compare").style.display = S.ecoOn ? "none" : "block";
-  const btn = $("badge-toggle-eco");
-  btn.textContent = S.ecoOn ? "Turn off Eco Mode" : "Turn on Eco Mode";
-  btn.className   = S.ecoOn ? "mbtn dark" : "mbtn grn";
-  showModal("modal-badge");
-}
-
-$("skip-badge").addEventListener("click",       () => { logBtn("badge-skip");     hideModal("modal-badge"); });
-$("badge-continue").addEventListener("click",   () => { logBtn("badge-continue"); hideModal("modal-badge"); });
-$("badge-toggle-eco").addEventListener("click", () => {
-  if (S.ecoOn) { disableEco(); logBtn("badge-eco-off"); }
-  else         { enableEco();  logBtn("badge-eco-on");  }
-  hideModal("modal-badge");
+  log.badgeTaps.push({ at: new Date().toISOString(), ecoWas: S.ecoOn });
+  showCue2();
 });
 
 /* =========================================================
@@ -474,11 +463,18 @@ $("cue1-tellmore").addEventListener("click", () => {
 });
 
 /* =========================================================
-   MODAL 2 (Layer 2)
+   MODAL 2 (Layer 2) -- also handles badge tap re-entry
    ========================================================= */
 $("skip2").addEventListener("click", () => { logBtn("cue2-skip"); log.cue2.action="skip"; hideModal("modal-layer2"); });
 $("cue2-continue").addEventListener("click", () => { logBtn("cue2-continue"); log.cue2.action="continue"; hideModal("modal-layer2"); });
-$("cue2-eco").addEventListener("click", () => { logBtn("cue2-eco-on"); log.cue2.action="eco-on"; enableEco(); hideModal("modal-layer2"); });
+$("cue2-eco-toggle").addEventListener("click", () => {
+  if (S.ecoOn) {
+    disableEco(); logBtn("cue2-eco-off");
+  } else {
+    enableEco(); logBtn("cue2-eco-on"); log.cue2.action = "eco-on";
+  }
+  hideModal("modal-layer2");
+});
 
 /* =========================================================
    ECO MODE
@@ -487,19 +483,19 @@ function enableEco() {
   S.ecoOn = true;
   if (!log.ecoModeEnabled) { log.ecoModeEnabled=true; log.ecoModeFirstTimestamp=new Date().toISOString(); }
   log.ecoModeToggleCount++;
-  $("eco-badge").className         = "eco-on";
-  $("eco-label").textContent       = "Eco Mode On";
+  $("eco-badge").className  = "eco-on";
+  $("eco-leaf").textContent = "🟢";
   $("feed-container").style.filter = "brightness(.87) saturate(.62)";
   const v = $("vid-" + S.currentCard);
-if (v) v.pause();
+  if (v) v.pause();
 }
 function disableEco() {
   S.ecoOn = false; log.ecoModeToggleCount++;
-  $("eco-badge").className         = "eco-off";
-  $("eco-label").textContent       = "Eco Mode Off";
+  $("eco-badge").className  = "eco-off";
+  $("eco-leaf").textContent = "🟡";
   $("feed-container").style.filter = "";
   const v = $("vid-" + S.currentCard);
-if (v && v.src) v.play().catch(() => {});
+  if (v && v.src) v.play().catch(() => {});
 }
 
 /* =========================================================
@@ -531,7 +527,27 @@ function transitionTo(phase) {
 
   if (phase==="code")  { $("screen-code").classList.remove("hidden"); }
   else if (phase==="feed") { buildFeed(); startFeed(); }
-  else if (phase==="end")  { renderLog(); $("screen-end").classList.remove("hidden"); }
+  else if (phase==="end")  {
+    renderLog();
+    sendLogToSheets({
+      participantCode: log.participantCode,
+      studyCondition: log.studyCondition,
+      sessionStart: log.sessionStart ? new Date(log.sessionStart).toISOString() : null,
+      sessionEnd: log.sessionEnd,
+      sessionEndReason: log.sessionEndReason,
+      totalTimeSec: log.totalTimeSec,
+      cardsViewed: log.cardsViewed,
+      scrollPx: log.scrollPx,
+      skippedCardsBeforeCue1: log.skippedCardsBeforeCue1,
+      timeBeforeFirstCueSec: log.timeBeforeFirstCueSec,
+      likedCards: log.likedCards,
+      dislikedCards: log.dislikedCards,
+      ecoModeEnabled: log.ecoModeEnabled,
+      ecoModeToggleCount: log.ecoModeToggleCount,
+      ecoModeOnAtEnd: log.ecoModeOnAtEnd
+    });
+    $("screen-end").classList.remove("hidden");
+  }
 }
 
 function playCard(i) {
@@ -546,18 +562,28 @@ function playCard(i) {
   }
   logBtn("manual-play-card-" + i);
 }
+
 /* =========================================================
    LOG + EXPORT
    ========================================================= */
+function sendLogToSheets(logData) {
+  fetch(SHEETS_ENDPOINT, {
+    method: "POST",
+    body: JSON.stringify(logData)
+  }).catch(() => {});
+}
+
 function renderLog() {
   const out = {
     participantCode: log.participantCode,
+    studyCondition: log.studyCondition,
     sessionStart: log.sessionStart ? new Date(log.sessionStart).toISOString() : null,
     sessionEnd: log.sessionEnd,
     sessionEndReason: log.sessionEndReason,
     totalTimeSec: log.totalTimeSec,
     cardsViewed: log.cardsViewed,
     scrollPx: log.scrollPx,
+    skippedCardsBeforeCue1: log.skippedCardsBeforeCue1,
     timeBeforeFirstCueSec: log.timeBeforeFirstCueSec,
     timePerCard: log.timePerCard,
     likedCards: log.likedCards,
