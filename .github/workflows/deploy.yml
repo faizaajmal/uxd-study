@@ -15,8 +15,12 @@ jobs:
 
       - name: Inject Pexels API key into config.js
         run: |
-          echo "const PEXELS_API_KEY = '${{ secrets.PEXELS_API_KEY }}';" > config.js
-          cat config.js
+         cat <<EOF > config.js
+         const PEXELS_API_KEY = '${{ secrets.PEXELS_API_KEY }}';
+         const UNSPLASH_API_KEY = '${{ secrets.SHEETS_ENDPOINT }}';
+         EOF
+
+         cat config.js
 
       - name: List files to confirm
         run: ls -la
