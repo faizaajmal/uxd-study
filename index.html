@@ -9,12 +9,12 @@
 <body>
 
   <!-- =====================================================
-       SCREEN 0 — PARTICIPANT CODE
+       SCREEN 0 — PARTICIPANT CODE + CONDITION
        ===================================================== -->
   <div id="screen-code" class="screen">
     <div class="code-logo">🌿</div>
-    <div class="code-title">Feed Study</div>
-    <div class="code-sub">UX Research Prototype<br>Enter your participant code to begin.</div>
+    <div class="code-title">Welcome!</div>
+    <div class="code-sub">Before we start, please enter the participant code your researcher gave you.</div>
     <input
       id="input-code"
       class="code-input"
@@ -24,6 +24,15 @@
       autocomplete="off"
       spellcheck="false"
     >
+
+    <div class="condition-toggle">
+      <div class="condition-label">Study Condition</div>
+      <div class="condition-options">
+        <button type="button" class="condition-btn active" id="cond-control" data-cond="control">Control</button>
+        <button type="button" class="condition-btn" id="cond-experiment" data-cond="experiment">Experiment</button>
+      </div>
+    </div>
+
     <button id="btn-start" class="btn-start" disabled>Start &rarr;</button>
   </div>
 
@@ -31,25 +40,23 @@
        FEED CHROME (persistent overlays)
        ===================================================== -->
 
-  <!-- Eco mode badge — always visible during feed, tappable -->
+  <!-- Eco mode badge — hidden until Cue 1 fires, tappable -->
   <div id="eco-badge" class="eco-off">
-    <span id="eco-leaf">🌿</span>
-    <span id="eco-label">Eco Mode Off</span>
+    <span id="eco-leaf">🟡</span>
   </div>
 
-  <!-- 8-minute countdown -->
-  <div id="session-timer">8:00</div>
+  <!-- countdown -->
+  <div id="session-timer">12:00</div>
+
+  <!-- small end-session link, under the timer -->
   <button id="btn-end-session" style="display:none;">&#x2715; End</button>
-
-
-  
 
   <!-- Confirm end modal -->
   <div class="modal-overlay" id="modal-confirm-end">
     <div class="modal-card">
       <div class="modal-leaf">📋</div>
-      <div class="modal-title">End session?</div>
-      <div class="modal-body">This will stop the timer and show you the full session log. You cannot go back.</div>
+      <div class="modal-title">Finish up?</div>
+      <div class="modal-body">You're about to end the session early. This can't be undone — make sure you're ready before continuing.</div>
       <div class="modal-btns">
         <button class="mbtn"      id="confirm-cancel">Keep Scrolling</button>
         <button class="mbtn dark" id="confirm-end">End &amp; Get Log</button>
@@ -61,124 +68,195 @@
   <div id="feed-container"></div>
 
   <!-- =====================================================
-       MODAL 1 — Layer 1: Awareness (fires on card 4)
+       MODAL 1 — Layer 1: Awareness (fires on CUE1_CARD)
        ===================================================== -->
   <div class="modal-overlay" id="modal-layer1">
     <div class="modal-card cue-card">
+      <div class="cue-handle"></div>
       <span class="modal-skip" id="skip1">Skip</span>
-      <div class="modal-leaf">🌿</div>
 
-      <div class="cue-hero">
+      <div class="cue-leaf-icon">
+        <svg width="30" height="30" viewBox="0 0 32 32" role="img" aria-hidden="true">
+          <path d="M16 28 V16" stroke="#3b6d11" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M16 18 C10 18 8 12 8 8 C13 8 16 12 16 18Z" fill="#639922"/>
+          <path d="M16 16 C22 16 24 10 24 6 C19 6 16 10 16 16Z" fill="#97c459"/>
+        </svg>
+      </div>
+
+      <h3 class="cue-title">Every scroll has an impact!</h3>
+
+      <div class="cue-stat-card">
+        <svg width="50" height="60" viewBox="0 0 50 60" role="img" aria-hidden="true" class="cue-stat-icon">
+          <defs>
+            <linearGradient id="phoneG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5DCAA5"/>
+              <stop offset="100%" stop-color="#1D9E75"/>
+            </linearGradient>
+          </defs>
+          <rect x="3" y="3" width="36" height="54" rx="9" fill="white" stroke="black" stroke-width="1.5"/>
+          <rect x="7" y="9" width="28" height="42" rx="4" fill="white"/>
+          <circle cx="21" cy="30" r="9" fill="#0F6E56" opacity="0.95"/>
+          <path d="M18 25.5 L18 34.5 L26 30 Z" fill="white"/>
+         <!--
+          <path d="M36 38 C40 36 44 38 45 43 C46 47 43 50 39 49 L37 53 L35 47 C32 45 32 41 36 38 Z" fill="#27500A" stroke="#27500A" stroke-width="1"/>
+          <path d="M38 40 L39 35" stroke="#000" stroke-width="1.5" stroke-linecap="round" fill="none"/> -->
+        </svg>
+
+        <div class="cue-stat-text">
+          <div class="cue-stat-number"><span id="cue1-count">0</span><span class="cue-stat-unit">videos</span></div>
+          <div class="cue-stat-sub">started loading and playing automatically as you scroll</div>
+        </div>
+
+        <div class="cue-co2-badge">
+          <span class="cue-co2-val" id="cue1-co2-val">0.0g</span>
+          <span class="cue-co2-unit">CO&#8322;</span>
+        </div>
+      </div>
+
+      <p class="cue-body-text">
+        Even videos you don't watch use <strong>energy</strong> and contribute to <strong>digital pollution</strong>.
+      </p>
+
+      <img src="images/earth-illustration.png" alt="" class="cue1-earth-img">
+
+      <div class="cue-callout">
         
-        <div class="cue-headline">
-          Hi!
-        </div>
-      </div>
-
-      <div class="modal-body">
-        You've scrolled past <strong id="cue1-count">8</strong> videos that load and play automatically and use <strong>energy</strong> and contribute to <strong>digital carbon emissions</strong>.
-      </div>
-
-      <div class="stat-row">
-        <span class="stat-val" id="cue1-co2">~0.3g CO2</span>
-        <span class="stat-lbl">estimated emissions so far</span>
-      </div>
-      <div class="stat-bar"><div class="stat-fill" id="bar1-co2" style="width:20%"></div></div>
-      <!--<div class="cue-stats-box">
-        <div class="cue-stats-label">So far in this session</div>
-        <div class="cue-stats-row">
-    
-          <div class="cue-stat">
-            <div class="cue-stat-val" id="cue1-co2">~0.3g CO2</div>
-            <div class="cue-stat-label">estimated carbon emissions</div>
-          </div>
-         
-        </div>
-      </div>-->
-<div class="cue-callout">
-  <span class="cue-callout-emoji">💡</span>
-        <span>Every scroll has an impact. Would you like to reduce unnecessary video loading?</span>
+        <svg width="20" height="20" viewBox="0 0 16 16" class="cue-callout-icon" aria-hidden="true">
+          <path d="M8 1 L9.5 5.5 L14 5.5 L10.5 8.5 L12 13 L8 10 L4 13 L5.5 8.5 L2 5.5 L6.5 5.5 Z" fill="#3b6d11"/>
+        </svg>
+        <span>Small changes in how we scroll can make a big difference.</span>
       </div>
 
       <div class="modal-btns">
-        <button class="mbtn"      id="cue1-continue">Not Now</button>
-        <button class="mbtn dark" id="cue1-tellmore">Learn More</button>
+        <button class="mbtn" id="cue1-continue">Continue Scrolling</button>
+        <button class="mbtn grn" id="cue1-tellmore">Reduce Digital Impact → </button>
       </div>
     </div>
   </div>
 
   <!-- =====================================================
-       MODAL 2 — Layer 2: Eco mode offer (fires on card 6)
+       MODAL 2 — Layer 2: Eco mode offer
+       Also reused when the top-left eco badge is tapped
        ===================================================== -->
   <div class="modal-overlay" id="modal-layer2">
-    <div class="modal-card">
+    <div class="modal-card cue-card">
+      <div class="cue-handle"></div>
       <span class="modal-skip" id="skip2">Skip</span>
-      <div class="modal-leaf">🌿</div>
-      <div class="modal-title">Eco Mode helps you save energy while you scroll.</div>
-      <div class="modal-body">
-      
-      Instead of loading and playing every video automatically, videos are shown with their thumbnail and caption. Videos only load when you choose to play them.
-      </div>
-      <div class="eco-compare">
-        <div class="eco-row">
-          <span class="eco-lbl">Your session</span>
-          <span class="eco-val" id="cue2-session">~0.3g CO2</span>
-        </div>
-        <div class="stat-bar"><div class="stat-fill" id="cue2-bar-real" style="width:50%"></div></div>
-        <div class="eco-row">
-          <span class="eco-lbl">With eco mode</span>
-          <span class="eco-val" id="cue2-eco-val">~0.1g CO2</span>
-        </div>
-        <div class="stat-bar"><div class="stat-fill g" id="cue2-bar-eco" style="width:15%"></div></div>
-      </div>
-      <div class="cue2-benefits">
-        <div class="cue2-benefit">
-          <span class="cue2-benefit-icon">🌱</span>
-          <span class="cue2-benefit-label">Uses less energy</span>
-        </div>
-        <div class="cue2-benefit">
-          <span class="cue2-benefit-icon">🍃</span>
-          <span class="cue2-benefit-label">Reduces digital carbon emissions</span>
-        </div>
-        <div class="cue2-benefit">
-          <span class="cue2-benefit-icon">📶</span>
-          <span class="cue2-benefit-label">Helps you scroll sustainably</span>
-        </div>
-      </div>
-      <div class="modal-btns">
-        <button class="mbtn"     id="cue2-continue">Not Now</button>
-        <button class="mbtn grn" id="cue2-eco">Turn on Eco Mode</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- =====================================================
-       MODAL 3 — Eco badge tapped: session insights + toggle
-       ===================================================== -->
-  <div class="modal-overlay" id="modal-badge">
-    <div class="modal-card">
-      <span class="modal-skip" id="skip-badge">Skip</span>
-      <div class="modal-leaf">🌿</div>
-      <div class="modal-title">Live session insights</div>
-      <div class="modal-body" id="badge-body">Your session with eco mode off</div>
-      <div class="eco-compare">
-        <div class="eco-row">
-          <span class="eco-lbl" id="badge-row-lbl">Your session</span>
-          <span class="eco-val" id="badge-co2">~1.4g CO2</span>
+      <div class="cue-leaf-icon">
+        <svg width="30" height="30" viewBox="0 0 32 32" role="img" aria-hidden="true">
+          <path d="M16 28 V16" stroke="#3b6d11" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M16 18 C10 18 8 12 8 8 C13 8 16 12 16 18Z" fill="#639922"/>
+          <path d="M16 16 C22 16 24 10 24 6 C19 6 16 10 16 16Z" fill="#97c459"/>
+        </svg>
+      </div>
+
+      <h3 class="cue-title"><span class="grn-text">Eco Mode</span> changes how videos load</h3>
+      <p class="cue-subtitle">Instead of loading every video automatically, you'll see thumbnails first.</p>
+
+      <!--<div class="cue2-co2-row">
+        <span class="cue2-co2-label">Your session so far</span>
+        <span class="cue2-co2-value"><span id="cue2-co2">0.0g</span> CO&#8322;</span>
+      </div>-->
+
+      <div class="cue2-phones-row">
+
+        <div class="cue2-phone-box standard">
+          <div class="cue2-co2-badge-corner cue2-co2-badge-std">
+    <span class="cue2-co2-val-corner" id="cue2-std-co2">0.0g</span>
+    <span class="cue2-co2-unit-corner">CO&#8322;</span>
+  </div>
+          <div class="cue2-phone-label">Auto Play</div>
+          <div class="cue2-phone-sub">Many videos load and play as you scroll</div>
+          <svg width="100%" height="116" viewBox="0 0 110 116" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="phoneShadow1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#000" stop-opacity="0.08"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <rect x="22" y="4" width="66" height="104" rx="16" fill="white" stroke="#BA7517" stroke-width="2"/>
+            <rect x="22" y="4" width="66" height="20" rx="16" fill="url(#phoneShadow1)"/>
+            <rect x="29" y="13" width="52" height="24" rx="6" fill="#EF9F27"/>
+            <circle cx="55" cy="25" r="8" fill="white" opacity="0.95"/>
+            <path d="M52 20.5 L52 29.5 L60.5 25 Z" fill="#BA7517"/>
+            <circle cx="76" cy="17" r="3" fill="white"/>
+            <rect x="29" y="42" width="52" height="24" rx="6" fill="#EF9F27"/>
+            <circle cx="55" cy="54" r="8" fill="white" opacity="0.95"/>
+            <path d="M52 49.5 L52 58.5 L60.5 54 Z" fill="#BA7517"/>
+            <circle cx="76" cy="46" r="3" fill="white"/>
+            <rect x="29" y="71" width="52" height="24" rx="6" fill="#EF9F27"/>
+            <circle cx="55" cy="83" r="8" fill="white" opacity="0.95"/>
+            <path d="M52 78.5 L52 87.5 L60.5 83 Z" fill="#BA7517"/>
+            <circle cx="76" cy="75" r="3" fill="white"/>
+          </svg>
         </div>
-        <div class="stat-bar"><div class="stat-fill" id="badge-bar"  style="width:50%"></div></div>
-        <!-- only shown when eco is OFF, to illustrate potential saving -->
-        <div id="badge-eco-compare">
-          <div class="eco-row">
-            <span class="eco-lbl">With eco mode</span>
-            <span class="eco-val">~0.8g</span>
+
+        <div class="cue2-vs">vs</div>
+
+        <div class="cue2-phone-box eco">
+          <div class="cue2-co2-badge-corner cue2-co2-badge-eco">
+    <span class="cue2-co2-val-corner" id="cue2-eco-co2">0.0g</span>
+    <span class="cue2-co2-unit-corner">CO&#8322;</span>
+  </div>
+          <div class="cue2-phone-label">Eco mode</div>
+          <div class="cue2-phone-sub">Only videos you choose will play</div>
+          <svg width="100%" height="116" viewBox="0 0 110 116" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="phoneShadow2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#000" stop-opacity="0.08"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <rect x="22" y="4" width="66" height="104" rx="16" fill="white" stroke="#3b6d11" stroke-width="2"/>
+            <rect x="22" y="4" width="66" height="20" rx="16" fill="url(#phoneShadow2)"/>
+            <rect x="29" y="13" width="24" height="24" rx="6" fill="#D3D1C7"/>
+            <circle cx="41" cy="25" r="6.5" fill="#B4B2A9"/>
+            <rect x="33" y="20.5" width="16" height="9" rx="1.5" fill="white" opacity="0.6"/>
+            <rect x="57" y="13" width="24" height="24" rx="6" fill="#D3D1C7"/>
+            <circle cx="69" cy="25" r="6.5" fill="#B4B2A9"/>
+            <rect x="61" y="20.5" width="16" height="9" rx="1.5" fill="white" opacity="0.6"/>
+            <rect x="29" y="42" width="52" height="24" rx="6" fill="#639922"/>
+            <circle cx="55" cy="54" r="9" fill="white"/>
+            <path d="M52 49 L52 59 L61 54 Z" fill="#3b6d11"/>
+            <rect x="29" y="71" width="24" height="24" rx="6" fill="#D3D1C7"/>
+            <circle cx="41" cy="83" r="6.5" fill="#B4B2A9"/>
+            <rect x="33" y="78.5" width="16" height="9" rx="1.5" fill="white" opacity="0.6"/>
+            <rect x="57" y="71" width="24" height="24" rx="6" fill="#D3D1C7"/>
+            <circle cx="69" cy="83" r="6.5" fill="#B4B2A9"/>
+            <rect x="61" y="78.5" width="16" height="9" rx="1.5" fill="white" opacity="0.6"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <div class="cue2-benefits">
+        <div class="cue2-benefits-title">With Eco Mode, you can:</div>
+        <div class="cue2-benefits-row">
+          <div class="cue2-benefit">
+            <div class="cue2-benefit-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M10 1 L4 10 H8 L7 17 L14 7 H10 Z" fill="#27500A"/></svg>
+            </div>
+            <span class="cue2-benefit-label">Use less<br>energy</span>
           </div>
-          <div class="stat-bar"><div class="stat-fill g" id="badge-bar-eco"  style="width:27%"></div></div>
+          <div class="cue2-benefit">
+            <div class="cue2-benefit-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 14 C3 14 1 12 1 9.5 C1 7.2 2.7 5.3 5 5 C5.7 2.7 7.8 1 10.3 1 C13.4 1 16 3.4 16 6.5 C16 6.6 16 6.7 16 6.8 C17.7 7.2 19 8.7 19 10.5 C19 12.4 17.4 14 15.5 14 Z" fill="none" stroke="#27500A" stroke-width="1.5"/></svg>
+            </div>
+            <span class="cue2-benefit-label">Reduce digital<br>pollution</span>
+          </div>
+          <div class="cue2-benefit">
+            <div class="cue2-benefit-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 1 C5 1 2 4 2 8 C2 12 9 17 9 17 C9 17 16 12 16 8 C16 4 13 1 9 1 Z" fill="none" stroke="#27500A" stroke-width="1.5"/><path d="M6.5 8 L8 9.5 L11.5 6" stroke="#27500A" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="cue2-benefit-label">More control<br>over what plays</span>
+          </div>
         </div>
       </div>
+ 
       <div class="modal-btns">
-        <button class="mbtn"     id="badge-continue">Continue</button>
-        <button class="mbtn grn" id="badge-toggle-eco">Turn on Eco Mode</button>
+        <button class="mbtn" id="cue2-continue">Keep Watching</button>
+        <button class="mbtn grn" id="cue2-eco-toggle">Enable Eco Mode</button>
       </div>
     </div>
   </div>
@@ -188,10 +266,10 @@
        ===================================================== -->
   <div id="screen-end" class="screen hidden">
     <div class="end-icon">📊</div>
-    <div class="end-title">Session Complete</div>
+    <div class="end-title">You're all done!</div>
     <div class="end-sub">
-      Thank you for participating!<br>
-      Copy the log below and share it with your researcher.
+      Thanks so much for taking part.<br>
+      Please show this screen to the researcher, or use the buttons below.
     </div>
     <div class="log-box" id="log-output"></div>
     <button class="btn-copy"     id="btn-copy">Copy Log to Clipboard</button>

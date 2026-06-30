@@ -1,5 +1,5 @@
 /* =========================================================
-   FEED STUDY PROTOTYPE — stylesheet
+   FEED STUDY PROTOTYPE -- stylesheet
    ========================================================= */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,11 +46,10 @@ html, body {
 #screen-code {
   background: linear-gradient(160deg, #0a0a0a 0%, #0d1f0d 100%);
   padding: 32px 24px;
-  gap: 0;
 }
 .code-logo  { font-size: 52px; margin-bottom: 18px; }
 .code-title { font-size: 24px; font-weight: 700; letter-spacing: -.4px; margin-bottom: 6px; text-align: center; }
-.code-sub   { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 40px; line-height: 1.6; }
+.code-sub   { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 28px; line-height: 1.6; max-width: 280px; }
 
 .code-input {
   width: 220px;
@@ -63,10 +62,41 @@ html, body {
   text-align: center;
   letter-spacing: 4px;
   outline: none;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
   transition: border-color .2s;
 }
 .code-input:focus { border-color: var(--green); }
+
+.condition-toggle {
+  width: 220px;
+  margin-bottom: 22px;
+}
+.condition-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-align: center;
+}
+.condition-options {
+  display: flex;
+  gap: 6px;
+}
+.condition-btn {
+  flex: 1;
+  padding: 10px;
+  background: #1a1a1a;
+  border: 1.5px solid #333;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.condition-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
 
 .btn-start {
   width: 220px;
@@ -113,7 +143,6 @@ html, body {
   background: #000;
 }
 
-/* background layer — swapped to <video> when real files present */
 .vid-bg {
   position: absolute; inset: 0;
   background-size: cover;
@@ -125,7 +154,6 @@ html, body {
   display: block;
 }
 
-/* gradient scrim — darkens top & bottom for legibility */
 .vid-dim {
   position: absolute; inset: 0;
   background: linear-gradient(
@@ -137,7 +165,6 @@ html, body {
   pointer-events: none;
 }
 
-/* placeholder scene shown when no real video */
 .vid-scene {
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -145,21 +172,16 @@ html, body {
   gap: 14px;
   cursor: pointer;
 }
-.scene-emoji { font-size: 84px; filter: drop-shadow(0 4px 32px rgba(0,0,0,.6)); }
 .scene-label { font-size: 12px; color: rgba(255,255,255,.35); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 
-/* play indicator ring */
 .play-ring {
-    width: 64px;
-  height: 64px;
+  width: 56px; height: 56px;
   border-radius: 50%;
   background: rgba(255,255,255,.25);
   border: 2px solid rgba(255,255,255,.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  padding-left: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  padding-left: 3px;
   transition: background .2s, transform .15s;
 }
 .vid-scene:active .play-ring {
@@ -167,7 +189,6 @@ html, body {
   background: rgba(255,255,255,.4);
 }
 
-/* ---- bottom left text ---- */
 .card-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 88px;
@@ -178,7 +199,6 @@ html, body {
   font-size: 15px; font-weight: 800;
   margin-bottom: 7px;
   text-shadow: 0 1px 8px rgba(0,0,0,.9);
-  letter-spacing: .1px;
 }
 .card-caption {
   font-size: 13px;
@@ -189,7 +209,7 @@ html, body {
 .card-hashtags { color: var(--green-light); }
 
 /* =========================================================
-   RIGHT SIDEBAR — TikTok-style action buttons
+   RIGHT SIDEBAR
    ========================================================= */
 .card-sidebar {
   position: absolute;
@@ -200,8 +220,6 @@ html, body {
   gap: 6px;
   padding-bottom: 4px;
 }
-
-/* individual button wrapper */
 .side-btn {
   display: flex; flex-direction: column;
   align-items: center;
@@ -209,10 +227,7 @@ html, body {
   cursor: pointer;
   user-select: none;
   padding: 4px 0;
-  -webkit-tap-highlight-color: transparent;
 }
-
-/* icon circle */
 .side-icon-wrap {
   position: relative;
   width: 52px; height: 52px;
@@ -227,40 +242,27 @@ html, body {
   display: flex; align-items: center; justify-content: center;
   transition: transform .18s cubic-bezier(.34,1.56,.64,1), background .18s;
 }
-.side-btn:active .side-icon-circle {
-  transform: scale(.85);
-}
-
-/* SVG icons inside circles */
+.side-btn:active .side-icon-circle { transform: scale(.85); }
 .side-icon-circle svg {
   width: 24px; height: 24px;
   fill: #fff;
   transition: fill .18s, transform .18s;
 }
-
-/* LIKE (thumbs up) active state */
 .side-btn.liked .side-icon-circle {
   background: rgba(255, 59, 92, .3);
   border-color: rgba(255, 59, 92, .5);
 }
 .side-btn.liked .side-icon-circle svg { fill: #FF3B5C; }
-
-/* DISLIKE (thumbs down) active state */
 .side-btn.disliked .side-icon-circle {
   background: rgba(59, 130, 246, .3);
   border-color: rgba(59, 130, 246, .5);
 }
 .side-btn.disliked .side-icon-circle svg { fill: #3B82F6; }
-
-/* count label */
 .side-count {
   font-size: 12px; font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 6px rgba(0,0,0,.8);
-  letter-spacing: .2px;
 }
-
-/* pop animation on tap */
 @keyframes pop {
   0%   { transform: scale(1); }
   40%  { transform: scale(1.35); }
@@ -270,29 +272,7 @@ html, body {
 .side-btn.pop .side-icon-circle { animation: pop .35s ease forwards; }
 
 /* =========================================================
-   TOP BAR
-   ========================================================= */
-#top-bar {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: 52px;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 10;
-  background: linear-gradient(to bottom, rgba(0,0,0,.45), transparent);
-  pointer-events: none;
-}
-.top-tabs { display: flex; gap: 26px; pointer-events: all; }
-.top-tab {
-  font-size: 15px; font-weight: 600;
-  color: rgba(255,255,255,.45);
-  cursor: pointer;
-  padding-bottom: 2px;
-  border-bottom: 2.5px solid transparent;
-  transition: color .2s, border-color .2s;
-}
-.top-tab.active { color: #fff; border-bottom-color: #fff; }
-
-/* =========================================================
-   SESSION TIMER (top-right)
+   SESSION TIMER
    ========================================================= */
 #session-timer {
   position: fixed; top: 14px; right: 14px;
@@ -309,61 +289,38 @@ html, body {
 }
 #session-timer.warning { color: #FF9800; border-color: rgba(255,152,0,.45); }
 
+/* small end-session link under the timer */
 #btn-end-session {
-    position: fixed;
-  top: 36px;
+  position: fixed;
+  top: 40px;
   right: 14px;
-  z-index: 25;
+  z-index: 20;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   padding: 4px 0;
   letter-spacing: .3px;
 }
-.btn-download {
-  width: 100%; max-width: 420px;
-  padding: 15px;
-  background: rgba(255,255,255,.08);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 10px;
-  letter-spacing: .2px;
-}
-.btn-download:hover { background: rgba(255,255,255,.12); }
 
 /* =========================================================
-   ECO BADGE (top-left, tappable)
+   ECO BADGE (top-left, tappable, hidden until Cue 1)
    ========================================================= */
 #eco-badge {
   position: fixed; top: 12px; left: 12px;
   z-index: 20;
-  border-radius: 20px;
-  padding: 7px 13px 7px 9px;
-  font-size: 12px; font-weight: 700;
+  width: 34px; height: 34px;
+  border-radius: 50%;
   display: none;
-  align-items: center; gap: 5px;
+  align-items: center; justify-content: center;
   cursor: pointer;
+  font-size: 16px;
+  background: rgba(20,20,20,.7);
+  border: 1.5px solid rgba(255,255,255,.2);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  transition: background .3s, border-color .3s;
-  border: 1.5px solid transparent;
-}
-#eco-badge.eco-off {
-  background: rgba(20,20,20,.75);
-  border-color: rgba(255,255,255,.2);
-  color: rgba(255,255,255,.7);
-}
-#eco-badge.eco-on {
-  background: var(--green);
-  border-color: transparent;
-  color: #fff;
 }
 
 /* =========================================================
@@ -392,18 +349,9 @@ html, body {
   position: relative;
   transform: translateY(36px);
   transition: transform .38s cubic-bezier(.34,1.44,.64,1);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.1);
 }
 .modal-overlay.visible .modal-card { transform: translateY(0); }
-
-/* drag handle */
-.modal-card::before {
-  content: '';
-  display: block;
-  width: 40px; height: 4px;
-  background: #ddd;
-  border-radius: 2px;
-  margin: 0 auto 18px;
-}
 
 .modal-skip {
   position: absolute; top: 20px; right: 16px;
@@ -411,24 +359,13 @@ html, body {
   cursor: pointer; padding: 4px 8px;
   font-weight: 600;
 }
-.modal-leaf { display: flex; justify-content: center; font-size: 28px; margin-bottom: 6px; }
 .modal-title { font-size: 19px; font-weight: 800; margin-bottom: 8px; color: #111; }
 .modal-body  { font-size: 14px; color: #555; line-height: 1.65; margin-bottom: 16px; }
 
-.stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.stat-val  { font-size: 14px; font-weight: 800; color: #111; min-width: 54px; }
-.stat-lbl  { font-size: 13px; color: #666; }
-
-.stat-bar  { height: 7px; border-radius: 4px; background: #eee; margin-bottom: 14px; overflow: hidden; }
-.stat-fill { height: 100%; border-radius: 4px; background: var(--amber); transition: width .65s ease; }
-.stat-fill.g { background: var(--green); }
-
-.eco-compare { margin-bottom: 16px; }
-.eco-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.eco-lbl { font-size: 13px; color: #555; }
-.eco-val { font-size: 13px; font-weight: 800; color: #111; }
-
-.modal-btns { display: flex; gap: 10px; margin-top: 2px; }
+.modal-btns {
+  display: flex; gap: 10px;
+  margin-top: 2px;
+}
 .mbtn {
   flex: 1; padding: 14px 8px;
   border-radius: 14px;
@@ -440,8 +377,235 @@ html, body {
   letter-spacing: .1px;
 }
 .mbtn:active { opacity: .8; transform: scale(.97); }
-.mbtn.dark { background: #111; color: #fff; border-color: #111; }
-.mbtn.grn  { background: var(--green); color: #fff; border-color: var(--green); }
+.mbtn.dark {
+  background: #111; color: #fff; border-color: #111;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.mbtn.grn {
+  background: linear-gradient(135deg, #639922, #3b6d11);
+  color: #fff; border: none;
+  box-shadow: 0 4px 12px rgba(59,109,17,0.3);
+}
+
+/* =========================================================
+   CUE CARD SHARED CHROME (Modal 1 + Modal 2)
+   ========================================================= */
+.cue-card { padding-top: 24px; }
+.cue-handle {
+  width: 32px; height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.cue-leaf-icon {
+  display: flex; justify-content: center;
+  margin-bottom: 8px;
+}
+.cue-title {
+  font-size: 18px; font-weight: 800;
+  text-align: center;
+  margin-bottom: 14px;
+  line-height: 1.35;
+  color: #111;
+}
+.grn-text { color: var(--green); }
+.cue-subtitle {
+  font-size: 13px; color: #666;
+  text-align: center; line-height: 1.5;
+  margin-bottom: 16px;
+}
+.cue-body-text {
+  font-size: 13.5px; color: #555;
+  line-height: 1.6; text-align: center;
+  margin-bottom: 16px;
+}
+.cue-callout {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: linear-gradient(135deg, #EAF3DE, #fff);
+  border-radius: 14px;
+  padding: 8px 14px;
+  margin-bottom: 18px;
+  font-size: 11.5px;
+  color: #555;
+  line-height: 1.5;
+  /*box-shadow: 0 2px 8px rgba(99,153,34,0.1);*/
+}
+.cue-callout-icon { flex-shrink: 0; margin-top: 1px; }
+
+/* =========================================================
+   CUE 1 — stat card (phone-tap icon + count + CO2 badge)
+   ========================================================= */
+.cue-stat-card {
+  background: linear-gradient(135deg, #EAF3DE 0%, #fff 100%);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(99,153,34,0.14);
+}
+.cue-stat-icon { flex-shrink: 0; }
+.cue-stat-text { flex: 1; min-width: 0; }
+.cue-stat-number {
+  font-size: 23px;
+  font-weight: 800;
+  color: #27500A;
+  line-height: 1.1;
+}
+.cue-stat-unit {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 4px;
+  color: #27500A;
+}
+.cue-stat-sub {
+  font-size: 12.5px;
+  color: #666;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.cue-co2-badge {
+  background: linear-gradient(135deg, #F0997B, #D85A30);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+  min-width: 50px;
+  box-shadow: 0 4px 10px rgba(216,90,48,0.35);
+}
+.cue-co2-val { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.1; }
+.cue-co2-unit { font-size: 12px; font-weight: 800; color: rgba(255,255,255,.85); margin-top: 1px; }
+
+.cue1-earth-img {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  display: block;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   CUE 2 — live CO2 row
+   ========================================================= */
+.cue2-co2-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #EAF3DE, #fff);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(99,153,34,0.1);
+}
+.cue2-co2-label { font-size: 12.5px; color: #666; font-weight: 600; }
+.cue2-co2-value { font-size: 16px; font-weight: 800; color: #27500A; }
+
+/* =========================================================
+   CUE 2 — phone comparison
+   ========================================================= */
+.cue2-phones-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+.cue2-phone-box {
+  flex: 1;
+  border-radius: 16px;
+  padding: 12px 5px;
+  text-align: center;
+}
+.cue2-phone-box.standard {
+ /* background: linear-gradient(180deg, #FAEEDA 0%, #FAC775 140%);*/
+  box-shadow: 0 4px 14px rgba(186,117,23,0.18);
+}
+.cue2-phone-box.eco {
+ /* background: linear-gradient(180deg, #EAF3DE 0%, #C0DD97 140%);*/
+  box-shadow: 0 4px 14px rgba(99,153,34,0.18);
+}
+.cue2-phone-label {
+  font-size: 12px; font-weight: 700;
+  margin-bottom: 6px;
+}
+.standard .cue2-phone-label { color: #854F0B; }
+.eco .cue2-phone-label      { color: #27500A; }
+.cue2-phone-sub {
+  font-size: 10.5px;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  opacity: .8;
+}
+.standard .cue2-phone-sub { color: #854F0B; }
+.eco .cue2-phone-sub      { color: #27500A; }
+.cue2-vs {
+  display: flex; align-items: center;
+  font-size: 16px; color: #999; font-weight: 700;
+}
+.cue2-phone-box { position: relative; }
+
+.cue2-co2-badge-corner {
+  position: absolute;
+  top: -7px; right: -2px;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 2;
+}
+.cue2-co2-badge-std {
+  background: linear-gradient(135deg, #F0997B, #D85A30);
+  box-shadow: 0 2px 6px rgba(216,90,48,0.4);
+}
+.cue2-co2-badge-eco {
+  background: linear-gradient(135deg, #97C459, #3B6D11);
+  box-shadow: 0 2px 6px rgba(59,109,17,0.4);
+}
+.cue2-co2-val-corner {
+  font-size: 11px; font-weight: 800;
+  color: white; line-height: 1.1;
+}
+.cue2-co2-unit-corner {
+  font-size: 10px; color: rgba(255,255,255,.85); line-height: 1;
+}
+/* =========================================================
+   CUE 2 — benefits row
+   ========================================================= */
+.cue2-benefits {
+  background: linear-gradient(135deg, #EAF3DE 0%, #fff 100%);
+  border-radius: 16px;
+  padding: 4px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(99,153,34,0.1);
+}
+.cue2-benefits-title {
+  font-size: 12.5px; font-weight: 700;
+  color: #27500A;
+  margin-bottom: 10px;
+}
+.cue2-benefits-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.cue2-benefit {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
+  text-align: center;
+}
+.cue2-benefit-icon-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+/* background: #C0DD97;*/
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(99,153,34,0.25);
+}
+.cue2-benefit-label {
+  font-size: 10px; font-weight: 700;
+  color: #27500A;
+  line-height: 1.3;
+}
 
 /* =========================================================
    END / RESULTS SCREEN
@@ -449,7 +613,6 @@ html, body {
 #screen-end {
   background: linear-gradient(160deg, #0a0a0a 0%, #0d1f0d 100%);
   padding: 36px 24px;
-  gap: 0;
   z-index: 200;
   overflow-y: auto;
   justify-content: flex-start;
@@ -473,7 +636,6 @@ html, body {
   margin-bottom: 18px;
   word-break: break-all;
 }
-
 .btn-copy {
   width: 100%; max-width: 420px;
   padding: 15px;
@@ -483,6 +645,15 @@ html, body {
   cursor: pointer; margin-bottom: 10px;
   letter-spacing: .2px;
 }
+.btn-download {
+  width: 100%; max-width: 420px;
+  padding: 15px;
+  background: transparent; color: var(--green);
+  border: 1.5px solid var(--green);
+  border-radius: 14px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; margin-bottom: 10px;
+}
 .btn-restart {
   width: 100%; max-width: 420px;
   padding: 15px;
@@ -491,151 +662,4 @@ html, body {
   border-radius: 14px;
   font-size: 15px; font-weight: 600;
   cursor: pointer;
-}
-/* =========================================================
-   CUE 1 — redesigned card-based layer (matches reference)
-   ========================================================= */
-.cue-step-badge {
-  position: absolute; top: 16px; left: 16px;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: #e8f5e9;
-  color: var(--green);
-  font-size: 12px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.cue-hero {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-.cue-phone-icon {
-  flex-shrink: 0;
-  width: 52px; height: 72px;
-  border-radius: 12px;
-  background: linear-gradient(160deg, #1a3a2a, #0d1f0d);
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-}
-.cue-phone-play {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.92);
-  color: #1a3a2a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  padding-left: 2px;
-}
-.cue-headline {
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.4;
-  color: #111;
-}
-.cue-headline strong { color: var(--green); }
-
-.cue-callout {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: #f0f9f0;
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin: 14px 0;
-  font-size: 13px;
-  color: #333;
-  line-height: 1.5;
-}
-.cue-callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-.cue-callout strong { color: var(--green); }
-
-.cue-stats-box {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 16px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
-}
-.cue-stats-label {
-  font-size: 12px;
-  color: #888;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.cue-stats-row {
-  display: flex;
-  gap: 12px;
-}
-.cue-stat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-.cue-stat-icon {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-  margin-bottom: 2px;
-}
-.cue-stat-icon.blue { background: #e3f0ff; color: #3B82F6; }
-.cue-stat-icon.green { background: #e8f5e9; color: var(--green); }
-.cue-stat-value {
-  font-size: 19px;
-  font-weight: 800;
-  color: #111;
-}
-.cue-stat-label {
-  font-size: 12px;
-  color: #888;
-}
-
-.cue-question {
-  font-size: 15px;
-  font-weight: 700;
-  text-align: center;
-  color: #111;
-  margin-bottom: 14px;
-  line-height: 1.4;
-}
-.cue2-benefits {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  background: #f0f9f0;
-  border-radius: 14px;
-  padding: 14px 10px;
-  margin-bottom: 16px;
-}
-.cue2-benefit {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-}
-.cue2-benefit-icon {
-  font-size: 18px;
-}
-.cue2-benefit-label {
-  font-size: 11px;
-  color: #333;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.mbtn.grn {
-  background: var(--green);
-  color: #fff;
-  border-color: var(--green);
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
 }

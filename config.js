@@ -1,1 +1,0 @@
-const PEXELS_API_KEY = 'IlZzOgSeqxNBOCA1aQ1ByaveACw6ojPednzyoG6i3R17ozN6K9MI2G0y';
