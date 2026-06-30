@@ -492,7 +492,7 @@ function enableEco() {
 function disableEco() {
   S.ecoOn = false; log.ecoModeToggleCount++;
   $("eco-badge").className  = "eco-off";
-  $("eco-leaf").textContent = "🟡";
+  $("eco-leaf").textContent = "🟠";
   $("feed-container").style.filter = "";
   const v = $("vid-" + S.currentCard);
   if (v && v.src) v.play().catch(() => {});
