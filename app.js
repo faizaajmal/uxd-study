@@ -82,8 +82,8 @@ const SVG = {
 /* =========================================================
    CONSTANTS
    ========================================================= */
-const SESSION_SECS = 18 * 60;
-const CUE1_CARD    = 3;
+const SESSION_SECS = 8 * 60;
+const CUE1_CARD    = 15;
 const CUE2_CARD    = 20;
 const SKIP_THRESHOLD_SEC = 1;
 const GRAMS_PER_AUTOPLAYED_VIDEO = 0.2;
@@ -149,7 +149,7 @@ async function fetchVideoURL(cardIndex) {
   const url   = "https://api.pexels.com/videos/search?query=" + query
               + "&per_page=5&orientation=portrait&size=medium";
   try {
-    const res  = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
+    const res  = await fetch(url, { headers: { Authorization: CONFIG.PEXELS_API_KEY } });
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.videos || data.videos.length === 0) return null;
@@ -567,7 +567,7 @@ function playCard(i) {
    LOG + EXPORT
    ========================================================= */
 function sendLogToSheets(logData) {
-  fetch(SHEETS_ENDPOINT, {
+  fetch(CONFIG.SHEETS_ENDPOINT, {
     method: "POST",
     body: JSON.stringify(logData)
   }).catch(() => {});
