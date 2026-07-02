@@ -183,6 +183,9 @@ html, body {
   font-size: 20px;
   padding-left: 3px;
   transition: background .2s, transform .15s;
+  cursor: pointer;
+  letter-spacing: 2px; /* space between pause bars */
+
 }
 .vid-scene:active .play-ring {
   transform: scale(.9);
@@ -417,7 +420,6 @@ html, body {
 .cue-body-text {
   font-size: 13.5px; color: #555;
   line-height: 1.6; text-align: center;
-  margin-bottom: 16px;
 }
 .cue-callout {
   display: flex; align-items: flex-start; gap: 10px;
@@ -479,10 +481,9 @@ html, body {
 
 .cue1-earth-img {
   width: 100%;
+  max-height:160px;
   border-radius: 14px;
-  margin-bottom: 16px;
   display: block;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
 /* =========================================================
