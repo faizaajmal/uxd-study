@@ -484,7 +484,7 @@ function enableEco() {
   if (!log.ecoModeEnabled) { log.ecoModeEnabled=true; log.ecoModeFirstTimestamp=new Date().toISOString(); }
   log.ecoModeToggleCount++;
   $("eco-badge").className  = "eco-on";
-  $("eco-leaf").textContent = "🟢";
+  $("eco-leaf").textContent = "🟢 Eco Mode On";
   $("feed-container").style.filter = "brightness(.87) saturate(.62)";
   const v = $("vid-" + S.currentCard);
   if (v) v.pause();
@@ -492,7 +492,7 @@ function enableEco() {
 function disableEco() {
   S.ecoOn = false; log.ecoModeToggleCount++;
   $("eco-badge").className  = "eco-off";
-  $("eco-leaf").textContent = "🟠";
+  $("eco-leaf").textContent = "🟠 Eco Mode Off";
   $("feed-container").style.filter = "";
   const v = $("vid-" + S.currentCard);
   if (v && v.src) v.play().catch(() => {});
