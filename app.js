@@ -198,7 +198,12 @@ async function fetchVideosAround(centerIdx) {
         vid.src = result.videoUrl;
         vid.addEventListener("canplay", () => {
           const scene = $("vscene-" + i);
-          if (scene) scene.style.display = "none";
+         /* only hide scene and autoplay if this is the active card and eco is off */
+    if (i === S.currentCard && !S.ecoOn) {
+            const scene = $("vscene-" + i);
+      if (scene) scene.style.display = "none";
+      vid.play().catch(() => {});
+    }
         }, { once: true });
       }
       if (vid && result.thumbUrl) {
@@ -282,20 +287,36 @@ function buildFeed() {
 function syncVideos(activeIdx) {
   CARDS.forEach((_, i) => {
     const v = $("vid-" + i);
+        const scene = $("vscene-" + i);
+
     if (!v || !v.src) return;
     if (i === activeIdx) {
-      if (!S.ecoOn) {
+      if (!S.ecoOn && v.src) {
         v.play().catch(() => {});
+                if (scene) scene.style.display = "none";
+
       } else {
         v.pause();
+        if (scene) {
+          scene.style.display = "flex";
+          updatePlayIcon(scene, false);
+        }
       }
     } else {
       v.pause();
       v.currentTime = 0;
+      /* restore play icon on non-active cards so eco re-entry shows correctly */
+      if (scene) {
+        scene.style.display = "flex";
+        updatePlayIcon(scene, false);
+      }
     }
   });
 }
-
+function updatePlayIcon(sceneEl, isPlaying) {
+  const ring = sceneEl.querySelector(".play-ring");
+  if (ring) ring.innerHTML = isPlaying ? "&#9646;&#9646;" : "&#9654;";
+}
 /* =========================================================
    LIKE / DISLIKE
    ========================================================= */
@@ -337,7 +358,7 @@ function handleDislike(i) {
 /* =========================================================
    START FEED
    ========================================================= */
-function startFeed() {
+async function startFeed() {
   const feed = $("feed-container");
   feed.classList.add("active");
   $("session-timer").style.display   = "block";
@@ -349,7 +370,7 @@ function startFeed() {
   S.currentCard    = 0;
   log.cardsViewed  = 1;
 
-  fetchVideosAround(0);
+  await fetchVideosAround(0);
   syncVideos(0);
 
   S.timerInterval = setInterval(() => {
@@ -487,7 +508,13 @@ function enableEco() {
   $("eco-leaf").textContent = "🟢 Eco Mode On";
   $("feed-container").style.filter = "brightness(.87) saturate(.62)";
   const v = $("vid-" + S.currentCard);
+  const scene = $("vscene-" + S.currentCard);
+
   if (v) v.pause();
+  if (scene) {
+    scene.style.display = "flex";
+    updatePlayIcon(scene, false);
+  }
 }
 function disableEco() {
   S.ecoOn = false; log.ecoModeToggleCount++;
@@ -551,14 +578,18 @@ function transitionTo(phase) {
 }
 
 function playCard(i) {
-  const v = $("vid-" + i);
+  const v     = $("vid-" + i);
+  const scene = $("vscene-" + i);
   if (!v) return;
   if (v.paused) {
     v.play().catch(() => {});
-    $("vscene-" + i).style.display = "none";
+    if (scene) scene.style.display = "none";
   } else {
     v.pause();
-    $("vscene-" + i).style.display = "flex";
+    if (scene) {
+      scene.style.display = "flex";
+      updatePlayIcon(scene, false);
+    }
   }
   logBtn("manual-play-card-" + i);
 }
