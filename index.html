@@ -12,7 +12,7 @@
        SCREEN 0 — PARTICIPANT CODE + CONDITION
        ===================================================== -->
   <div id="screen-code" class="screen">
-    <div class="code-logo">🌿</div>
+    <div class="code-logo"></div>
     <div class="code-title">Welcome!</div>
     <div class="code-sub">Before we start, please enter the participant code your researcher gave you.</div>
     <input
@@ -28,8 +28,8 @@
     <div class="condition-toggle">
       <div class="condition-label">Study Condition</div>
       <div class="condition-options">
-        <button type="button" class="condition-btn active" id="cond-control" data-cond="control">Control</button>
-        <button type="button" class="condition-btn" id="cond-experiment" data-cond="experiment">Experiment</button>
+        <button type="button" class="condition-btn active" id="cond-control" data-cond="control">0</button>
+        <button type="button" class="condition-btn" id="cond-experiment" data-cond="experiment">1</button>
       </div>
     </div>
 
@@ -42,16 +42,16 @@
 
   <!-- Eco mode badge — hidden until Cue 1 fires, tappable -->
   <div id="eco-badge" class="eco-off">
-    <span id="eco-leaf">🟠</span>
+    <span id="eco-leaf">🟠 Eco Mode Off</span>
   </div>
 
-  <!-- countdown -->
-  <div id="session-timer">12:00</div>
+  <!-- countdown 
+  <div id="session-timer">12:00</div>-->
 
-  <!-- small end-session link, under the timer -->
-  <button id="btn-end-session" style="display:none;">&#x2715; End</button>
+  <!-- small end-session link, under the timer 
+  <button id="btn-end-session" style="display:none;">&#x2715; End</button>-->
 
-  <!-- Confirm end modal -->
+  <!-- Confirm end modal 
   <div class="modal-overlay" id="modal-confirm-end">
     <div class="modal-card">
       <div class="modal-leaf">📋</div>
@@ -62,7 +62,7 @@
         <button class="mbtn dark" id="confirm-end">End &amp; Get Log</button>
       </div>
     </div>
-  </div>
+  </div>-->
 
   <!-- The scrollable feed — cards injected by app.js -->
   <div id="feed-container"></div>
@@ -265,17 +265,17 @@
        END SCREEN — session complete + data export
        ===================================================== -->
   <div id="screen-end" class="screen hidden">
-    <div class="end-icon">📊</div>
+    <div class="end-icon"> 🙏</div>
     <div class="end-title">You're all done!</div>
     <div class="end-sub">
-      Thanks so much for taking part.<br>
-      Please show this screen to the researcher, or use the buttons below.
+      You've reached the end of your session.<br><br> Thank you so much for taking part in this experiment.<br>
+      Please contact your researcher for next steps.
     </div>
-    <div class="log-box" id="log-output"></div>
+   <!-- <div class="log-box" id="log-output"></div>
     <button class="btn-copy"     id="btn-copy">Copy Log to Clipboard</button>
     <button class="btn-download" id="btn-download">Download as JSON</button>
     <button class="btn-restart"  id="btn-restart">Start New Session</button>
-  </div>
+  </div>-->
 
   <script src="config.js"></script>
   <script src="app.js"></script>

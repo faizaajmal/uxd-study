@@ -93,13 +93,16 @@ const GRAMS_PER_AUTOPLAYED_VIDEO = 0.2;
    ========================================================= */
 const log = {
   participantCode:"", studyCondition:"", sessionStart:null, sessionEnd:null,
-  sessionEndReason:"", totalTimeSec:0, cardsViewed:0, scrollPx:0, skippedCardsBeforeCue1: 0,
+  sessionEndReason:"", totalTimeSec:0, cardsViewed:0, skippedCards:0,
   timeBeforeFirstCueSec:null, timePerCard:{},
   likedCards:[], dislikedCards:[], buttonInteractions:[],
   ecoModeEnabled:false, ecoModeFirstTimestamp:null,
   ecoModeToggleCount:0, ecoModeOnAtEnd:false,
-  cue1:{ shown:false, shownAt:null, action:null },
-  cue2:{ shown:false, shownAt:null, action:null },
+  ecoModeDisabled:false, ecoModeDisabledTimestamp:null,
+  cardsWatchedWithEcoOn: 0,
+  ecoModeLatency: null,
+  cue1:{ shown:false, shownAt:null, action:null, closedAt:null, readingTimeSec:0, interactions:0 },
+  cue2:{ shown:false, shownAt:null, action:null, closedAt:null, readingTimeSec:0, interactions:0 },
   badgeTaps:[],
 };
 
@@ -132,9 +135,9 @@ function autoPlayedCount() { return S.currentCard + 1; }
 function totalCO2Grams()   { return autoPlayedCount() * GRAMS_PER_AUTOPLAYED_VIDEO; }
 function fmtCO2(grams)     { return grams.toFixed(1) + "g"; }
 
-function countSkippedCardsBeforeCue1() {
+function countSkippedCards() {
   let skipped = 0;
-  for (let i = 0; i < CUE1_CARD; i++) {
+  for (let i = 0; i < S.currentCard; i++) {
     const timeSpent = log.timePerCard[i] || 0;
     if (timeSpent < SKIP_THRESHOLD_SEC) skipped++;
   }
@@ -261,7 +264,6 @@ function buildFeed() {
       "<div class='vid-dim'></div>" +
       "<div class='vid-scene' id='vscene-" + i + "' onclick='playCard(" + i + ")'> " +
         "<div class='play-ring'>&#9654;</div>"  +
-        "<span class='scene-label'>VIDEO " + (i+1) + " / " + CARDS.length + "</span>" +
       "</div>" +
       "<div class='card-overlay'>" +
         "<div class='card-username'>"+d.user+"</div>" +
@@ -273,7 +275,7 @@ function buildFeed() {
         "</div>" +
         "<div class='side-btn' id='dislike-" + i + "' onclick='handleDislike(" + i + ")'>" +
           "<div class='side-icon-wrap'><div class='side-icon-circle'>" + SVG.thumbsDown + "</div></div>" +
-          "<span class='side-count' id='dc-" + i + "'>Nope</span>" +
+          "<span class='side-count' id='dc-" + i + "'></span>" +
         "</div>" +
       "</div>";
 
@@ -361,9 +363,9 @@ function handleDislike(i) {
 async function startFeed() {
   const feed = $("feed-container");
   feed.classList.add("active");
-  $("session-timer").style.display   = "block";
+  //$("session-timer").style.display   = "block";
   $("eco-badge").style.display       = "none";
-  $("btn-end-session").style.display = "block";
+  //$("btn-end-session").style.display = "block";
 
   log.sessionStart = now();
   S.cardEnteredAt  = now();
@@ -373,31 +375,36 @@ async function startFeed() {
   await fetchVideosAround(0);
   syncVideos(0);
 
-  S.timerInterval = setInterval(() => {
+  /*S.timerInterval = setInterval(() => {
     S.elapsedSec    = elapsed();
     const rem       = Math.max(0, SESSION_SECS - S.elapsedSec);
     const t         = $("session-timer");
     t.textContent   = fmtMSS(rem);
     t.classList.toggle("warning", rem <= 60);
     if (rem === 0) { log.sessionEndReason = "time-limit-session"; endSession(); }
-  }, 1000);
+  }, 1000);*/
 
   feed.addEventListener("scroll", onScroll, {passive:true});
 }
 
 function onScroll() {
   const feed = $("feed-container");
-  log.scrollPx   = Math.round(feed.scrollTop);
   const newIdx   = Math.round(feed.scrollTop / window.innerHeight);
   if (newIdx !== S.currentCard) {
     const spent = Math.floor((now()-S.cardEnteredAt)/1000);
     log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard]||0)+spent;
     log.cardsViewed = Math.max(log.cardsViewed, newIdx+1);
+    
     S.currentCard   = newIdx;
     S.cardEnteredAt = now();
     fetchVideosAround(newIdx);
     syncVideos(newIdx);
     checkCues(newIdx);
+    /* end session when participant reaches the last card */
+    if (newIdx >= CARDS.length - 1) {
+      log.sessionEndReason = "end-of-feed";
+      setTimeout(endSession, 3000);   /* 3 second delay so they see the last card */
+    }
   }
 }
 
@@ -420,7 +427,7 @@ function checkCues(idx) {
 }
 
 function showCue1() {
-  log.skippedCardsBeforeCue1 = countSkippedCardsBeforeCue1();
+  
   const co2 = totalCO2Grams();
 
   $("eco-badge").style.display = "flex";
@@ -450,7 +457,7 @@ function showCue2() {
 
 /* =========================================================
    END SESSION BUTTON
-   ========================================================= */
+   ========================================================= 
 $("btn-end-session").addEventListener("click", () => {
   logBtn("end-session-btn"); showModal("modal-confirm-end");
 });
@@ -461,12 +468,29 @@ $("confirm-end").addEventListener("click", () => {
   logBtn("confirm-end"); hideModal("modal-confirm-end");
   log.sessionEndReason = "researcher-ended"; endSession();
 });
+*/
 
+function closeCue1(action) {
+  log.cue1.action         = action;
+  log.cue1.closedAt       = new Date().toISOString();
+  log.cue1.readingTimeSec = Math.floor((new Date(log.cue1.closedAt) - new Date(log.cue1.shownAt)) / 1000);
+  hideModal("modal-layer1");
+}
+
+function closeCue2(action) {
+  log.cue2.action         = action;
+  log.cue2.closedAt       = new Date().toISOString();
+  log.cue2.readingTimeSec = Math.floor((new Date(log.cue2.closedAt) - new Date(log.cue2.shownAt)) / 1000);
+  hideModal("modal-layer2");
+}
 /* =========================================================
    ECO BADGE -- reuses Cue 2 modal
    ========================================================= */
 $("eco-badge").addEventListener("click", () => {
   logBtn("eco-badge-tap");
+  //log.cue3.opened    = true;
+ // log.cue3.openCount++;
+  //if (!log.cue3.openedAt) log.cue3.openedAt = new Date().toISOString();
   log.badgeTaps.push({ at: new Date().toISOString(), ecoWas: S.ecoOn });
   showCue2();
 });
@@ -474,11 +498,14 @@ $("eco-badge").addEventListener("click", () => {
 /* =========================================================
    MODAL 1 (Layer 1)
    ========================================================= */
-$("skip1").addEventListener("click", () => { logBtn("cue1-skip"); log.cue1.action="skip"; hideModal("modal-layer1"); });
-$("cue1-continue").addEventListener("click", () => { logBtn("cue1-continue"); log.cue1.action="continue"; hideModal("modal-layer1"); });
+$("skip1").addEventListener("click", () => {
+  logBtn("cue1-skip"); log.cue1.interactions++; closeCue1("skip");
+});
+$("cue1-continue").addEventListener("click", () => {
+  logBtn("cue1-continue"); log.cue1.interactions++; closeCue1("continue");
+});
 $("cue1-tellmore").addEventListener("click", () => {
-  logBtn("cue1-tell-more"); log.cue1.action="tell-more";
-  hideModal("modal-layer1");
+  logBtn("cue1-tell-more"); log.cue1.interactions++; closeCue1("tell-more");
   S.cue2Done=true; log.cue2.shown=true; log.cue2.shownAt=new Date().toISOString();
   setTimeout(showCue2, 320);
 });
@@ -486,15 +513,19 @@ $("cue1-tellmore").addEventListener("click", () => {
 /* =========================================================
    MODAL 2 (Layer 2) -- also handles badge tap re-entry
    ========================================================= */
-$("skip2").addEventListener("click", () => { logBtn("cue2-skip"); log.cue2.action="skip"; hideModal("modal-layer2"); });
-$("cue2-continue").addEventListener("click", () => { logBtn("cue2-continue"); log.cue2.action="continue"; hideModal("modal-layer2"); });
+$("skip2").addEventListener("click", () => {
+  logBtn("cue2-skip"); log.cue2.interactions++; closeCue2("skip");
+});
+$("cue2-continue").addEventListener("click", () => {
+  logBtn("cue2-continue"); log.cue2.interactions++; closeCue2("continue");
+});
 $("cue2-eco-toggle").addEventListener("click", () => {
+  log.cue2.interactions++;
   if (S.ecoOn) {
-    disableEco(); logBtn("cue2-eco-off");
+    disableEco(); logBtn("cue2-eco-off"); closeCue2("eco-off");
   } else {
-    enableEco(); logBtn("cue2-eco-on"); log.cue2.action = "eco-on";
+    enableEco(); logBtn("cue2-eco-on"); closeCue2("eco-on");
   }
-  hideModal("modal-layer2");
 });
 
 /* =========================================================
@@ -502,7 +533,16 @@ $("cue2-eco-toggle").addEventListener("click", () => {
    ========================================================= */
 function enableEco() {
   S.ecoOn = true;
-  if (!log.ecoModeEnabled) { log.ecoModeEnabled=true; log.ecoModeFirstTimestamp=new Date().toISOString(); }
+  if (!log.ecoModeEnabled) {   
+  log.ecoModeEnabled=true; 
+  log.ecoModeFirstTimestamp=new Date().toISOString(); 
+    /* latency = seconds from Cue 2 being shown to eco mode being enabled */
+    if (log.cue2.shownAt) {
+      log.ecoModeLatency = Math.floor(
+        (new Date(log.ecoModeFirstTimestamp) - new Date(log.cue2.shownAt)) / 1000
+      );
+    }
+  }
   log.ecoModeToggleCount++;
   $("eco-badge").className  = "eco-on";
   $("eco-leaf").textContent = "🟢 Eco Mode On";
@@ -518,6 +558,8 @@ function enableEco() {
 }
 function disableEco() {
   S.ecoOn = false; log.ecoModeToggleCount++;
+  log.ecoModeDisabled          = true;
+  log.ecoModeDisabledTimestamp = new Date().toISOString();
   $("eco-badge").className  = "eco-off";
   $("eco-leaf").textContent = "🟠 Eco Mode Off";
   $("feed-container").style.filter = "";
@@ -531,12 +573,13 @@ function disableEco() {
 function endSession() {
   if (S.phase==="end") return;
   S.phase = "end";
-  clearInterval(S.timerInterval);
+  //clearInterval(S.timerInterval);
   const spent = Math.floor((now()-S.cardEnteredAt)/1000);
   log.timePerCard[S.currentCard] = (log.timePerCard[S.currentCard]||0)+spent;
   log.sessionEnd    = new Date().toISOString();
   log.totalTimeSec  = elapsed();
   log.ecoModeOnAtEnd = S.ecoOn;
+  log.skippedCards = countSkippedCards();
   if (!log.sessionEndReason) log.sessionEndReason = "end-of-feed";
   transitionTo("end");
 }
@@ -548,14 +591,14 @@ function transitionTo(phase) {
   S.phase = phase;
   ["screen-code","screen-end"].forEach(id => $(id).classList.add("hidden"));
   $("feed-container").classList.remove("active");
-  $("session-timer").style.display   = "none";
+  //$("session-timer").style.display   = "none";
   $("eco-badge").style.display       = "none";
-  $("btn-end-session").style.display = "none";
+ // $("btn-end-session").style.display = "none";
 
   if (phase==="code")  { $("screen-code").classList.remove("hidden"); }
   else if (phase==="feed") { buildFeed(); startFeed(); }
   else if (phase==="end")  {
-    renderLog();
+    //renderLog();
     sendLogToSheets({
       participantCode: log.participantCode,
       studyCondition: log.studyCondition,
@@ -564,14 +607,21 @@ function transitionTo(phase) {
       sessionEndReason: log.sessionEndReason,
       totalTimeSec: log.totalTimeSec,
       cardsViewed: log.cardsViewed,
-      scrollPx: log.scrollPx,
-      skippedCardsBeforeCue1: log.skippedCardsBeforeCue1,
+      skippedCards: log.skippedCards,
       timeBeforeFirstCueSec: log.timeBeforeFirstCueSec,
       likedCards: log.likedCards,
       dislikedCards: log.dislikedCards,
       ecoModeEnabled: log.ecoModeEnabled,
       ecoModeToggleCount: log.ecoModeToggleCount,
-      ecoModeOnAtEnd: log.ecoModeOnAtEnd
+      ecoModeOnAtEnd: log.ecoModeOnAtEnd,
+      ecoModeDisabled:            log.ecoModeDisabled,
+      ecoModeDisabledTimestamp:   log.ecoModeDisabledTimestamp,
+      cue1:                       log.cue1,
+      cue2:                       log.cue2,
+      badgeTaps:                  log.badgeTaps,
+      cardsWatchedWithEcoOn: log.cardsWatchedWithEcoOn,
+      ecoModeLatency:        log.ecoModeLatency,
+      buttonInteractions:         log.buttonInteractions,
     });
     $("screen-end").classList.remove("hidden");
   }
@@ -584,6 +634,8 @@ function playCard(i) {
   if (v.paused) {
     v.play().catch(() => {});
     if (scene) scene.style.display = "none";
+    /* count intentional plays while eco mode is on */
+    if (S.ecoOn) log.cardsWatchedWithEcoOn++;
   } else {
     v.pause();
     if (scene) {
@@ -613,8 +665,7 @@ function renderLog() {
     sessionEndReason: log.sessionEndReason,
     totalTimeSec: log.totalTimeSec,
     cardsViewed: log.cardsViewed,
-    scrollPx: log.scrollPx,
-    skippedCardsBeforeCue1: log.skippedCardsBeforeCue1,
+    skippedCards: log.skippedCards,
     timeBeforeFirstCueSec: log.timeBeforeFirstCueSec,
     timePerCard: log.timePerCard,
     likedCards: log.likedCards,
@@ -631,27 +682,11 @@ function renderLog() {
   $("log-output").textContent = JSON.stringify(out, null, 2);
 }
 
-$("btn-copy").addEventListener("click", () => {
-  navigator.clipboard.writeText($("log-output").textContent).then(() => {
-    const b = $("btn-copy"), orig = b.textContent;
-    b.textContent = "Copied!";
-    setTimeout(() => { b.textContent = orig; }, 2000);
-  });
-});
 
-$("btn-download").addEventListener("click", () => {
-  const name = "session-" + (log.participantCode||"anon") + "-" + Date.now() + ".json";
-  const blob = new Blob([$("log-output").textContent], {type:"application/json"});
-  const a    = document.createElement("a");
-  a.href     = URL.createObjectURL(blob);
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  URL.revokeObjectURL(a.href);
-  a.remove();
-});
 
-$("btn-restart").addEventListener("click", () => location.reload());
+
+
+//$("btn-restart").addEventListener("click", () => location.reload());
 
 /* =========================================================
    INIT
