@@ -115,7 +115,6 @@ let S = {
   timerInterval:null, elapsedSec:0,
 };
 
-let studyCondition = "control";
 
 /* =========================================================
    UTILITIES
@@ -218,14 +217,16 @@ async function fetchVideosAround(centerIdx) {
 
 /* =========================================================
    CONDITION TOGGLE
-   ========================================================= */
+   ========================================================= 
 document.querySelectorAll(".condition-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".condition-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     studyCondition = btn.dataset.cond;
   });
-});
+});*/
+const urlParams    = new URLSearchParams(window.location.search);
+const studyCondition = urlParams.get("condition") === "experiment" ? "experiment" : "control";
 
 /* =========================================================
    CODE SCREEN
