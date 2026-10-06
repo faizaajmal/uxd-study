@@ -10,57 +10,108 @@
    query = search term sent to Pexels for that card's video
    --------------------------------------------------------- */
 const CARDS = [
-  { user:"@fictional_feed",    caption:"The best dan dan noodles ever",                 tags:"#streetfood #noodles",      likes:"241K", scene:"🍜",  query:"street food noodles" },
-  { user:"@fictional_feed",   caption:"Paris at golden hour never gets old",           tags:"#travel #paris",            likes:"892K", scene:"🗼",  query:"paris city travel" },
-    { user:"@fictional_feed",   caption:"New world record! Sub 4 min!!",                 tags:"#gaming #speedrun",         likes:"567K", scene:"🎮",  query:"gaming setup technology" },
-  { user:"@fictional_feed",  caption:"5400m above sea level. Worth it.",              tags:"#mountains #trekking",      likes:"729K", scene:"🏔️", query:"mountain hiking nature" },
-  { user:"@fictional_feed",   caption:"Passive aggressive sticky note escalation",     tags:"#work #comedy",             likes:"876K", scene:"😂",  query:"office work desk people" },
-  { user:"@fictional_feed",   caption:"10 years of growth in 60 seconds",              tags:"#bonsai #nature",           likes:"988K", scene:"🌿",  query:"bonsai tree nature plant" },
-  { user:"@fictional_feed",    caption:"Found this shipwreck 40 metres down",           tags:"#diving #ocean",            likes:"1.3M", scene:"🤿",  query:"scuba diving underwater ocean" },
-    { user:"@fictional_feed",   caption:"Bioluminescent waves at midnight",              tags:"#ocean #nature",            likes:"3.4M", scene:"🌊",  query:"ocean waves night sea" },
 
-  { user:"@fictional_feed",   caption:"When Monday hits different",                    tags:"#comedy #relatable",        likes:"1.2M", scene:"😹",  query:"funny cat animal" },
-  { user:"@fictional_feed",     caption:"That coat tho -- full fit inspo below",         tags:"#fashion #ootd",            likes:"374K", scene:"👗",  query:"fashion style woman" },
-  { user:"@fictional_feed", caption:"A lion just looked right at my lens",           tags:"#wildlife #nature",         likes:"2.1M", scene:"🦁",  query:"lion wildlife savanna" },
-  { user:"@fictional_feed",      caption:"Started with a blank canvas at midnight",       tags:"#art #timelapse",           likes:"441K", scene:"🎨",  query:"painting art brush" },
-  { user:"@fictional_feed",   caption:"That bicycle kick though",                      tags:"#sports #soccer",           likes:"3.4M", scene:"⚽",  query:"soccer football sport" },
-  { user:"@fictional_feed",   caption:"18 hours of dough fermentation",                tags:"#food #pizza",              likes:"219K", scene:"🍕",  query:"pizza cooking italian food" },
-  { user:"@fictional_feed",  caption:"5400m above sea level. Worth it.",              tags:"#mountains #trekking",      likes:"729K", scene:"🏔️", query:"mountain hiking nature" },
-  { user:"@fictional_feed",  caption:"They waddled right past us",                    tags:"#penguins #wildlife",       likes:"1.8M", scene:"🐧",  query:"penguin bird cold" },
-  { user:"@fictional_feed",      caption:"Found this performer in Barcelona",             tags:"#streetart #travel",        likes:"332K", scene:"🎭",  query:"street performer music dance" },
-  { user:"@fictional_feed",   caption:"Korean street corn at 2am",                     tags:"#koreanfood #streetfood",   likes:"388K", scene:"🌽",  query:"korean food market asia" },
-  { user:"@fictional_feed",       caption:"Butter chicken from scratch in 30 min",         tags:"#indianfood #recipe",       likes:"512K", scene:"🍛",  query:"cooking chef kitchen" },
-  { user:"@fictional_feed",    caption:"Tonkotsu broth simmered 12 hours",              tags:"#ramen #japanese",          likes:"674K", scene:"🍱",  query:"ramen japanese soup" },
-  { user:"@fictional_feed", caption:"Secret beach in Croatia nobody talks about",    tags:"#croatia #travel",          likes:"1.1M", scene:"🏝️", query:"beach ocean tropical waves" },
-  { user:"@fictional_feed",    caption:"Trans-Siberian railway at sunset",              tags:"#traintravel #landscape",   likes:"543K", scene:"🌅",  query:"train journey sunset landscape" },
-  { user:"@fictional_feed",     caption:"Living in Lisbon for $900 per month",           tags:"#digitalnomad #portugal",   likes:"987K", scene:"✈️", query:"city cafe laptop travel" },
-  { user:"@fictional_feed",  caption:"My dog is absolutely judging me",               tags:"#dogs #comedy",             likes:"2.3M", scene:"🐶",  query:"cute dog puppy funny" },
-  { user:"@fictional_feed",    caption:"Entire outfit: 12 euros from charity shop",     tags:"#thrift #sustainable",      likes:"1.8M", scene:"👠",  query:"vintage fashion shopping" },
-  { user:"@fictional_feed", caption:"5 pieces, 30 outfits -- capsule wardrobe",      tags:"#minimalist #fashion",      likes:"923K", scene:"🧥",  query:"minimalist fashion clothing" },
-  { user:"@fictional_feed",   caption:"Bioluminescent waves at midnight",              tags:"#ocean #nature",            likes:"3.4M", scene:"🌊",  query:"ocean waves night sea" },
-  { user:"@fictional_feed",         caption:"Hand-raised fox recognises my voice",           tags:"#fox #animals",             likes:"2.7M", scene:"🦊",  query:"fox animal forest wildlife" },
-  { user:"@fictional_feed",  caption:"Baby elephant learning to use its trunk",       tags:"#elephant #wildlife",       likes:"4.1M", scene:"🐘",  query:"elephant baby wildlife africa" },
-  { user:"@fictional_feed",     caption:"Found my Game Boy from 1994. Still works.",     tags:"#retrogaming #nostalgia",   likes:"2.2M", scene:"🕹️", query:"retro vintage technology" },
-  { user:"@fictional_feed",    caption:"$300 PC build that beats a PS5",                tags:"#pcbuild #gaming",          likes:"1.3M", scene:"💻",  query:"computer technology setup" },
-  { user:"@fictional_feed",  caption:"Carving a face from a single block of marble",  tags:"#sculpture #art",           likes:"2.8M", scene:"🗿",  query:"sculpture marble craft art" },
-  { user:"@fictional_feed",    caption:"This tattoo took 14 hours straight",            tags:"#tattoo #art",              likes:"1.9M", scene:"🎨",  query:"tattoo art ink" },
-  { user:"@fictional_feed",    caption:"Molten glass at 1100 degrees looks like lava",  tags:"#glassblowing #craft",      likes:"5.1M", scene:"🌋",  query:"glass blowing fire craft" },
-  { user:"@fictional_feed",      caption:"30-foot wave, no hesitation. Respect.",         tags:"#surfing #sports",          likes:"2.6M", scene:"🏄",  query:"surfing waves ocean sport" },
-  { user:"@fictional_feed",        caption:"365 days of training. The transformation.",     tags:"#gym #fitness",             likes:"4.8M", scene:"🏋️", query:"gym workout fitness training" },
-  { user:"@fictional_feed",    caption:"Scaled this 200m cliff with no rope",           tags:"#climbing #extreme",        likes:"6.2M", scene:"🧗",  query:"rock climbing mountain sport" },
-  { user:"@fictional_feed",    caption:"Paris rooftops from a different angle",         tags:"#parkour #sports",          likes:"3.9M", scene:"🏙️", query:"parkour urban city jump" },
-  { user:"@fictional_feed",   caption:"This croissant took 3 days to laminate",        tags:"#baking #pastry",           likes:"431K", scene:"🥐",  query:"baking pastry bread croissant" },
-  { user:"@fictional_feed",      caption:"This lagoon in Philippines looks unreal",       tags:"#philippines #travel",      likes:"1.4M", scene:"🐚",  query:"tropical island lagoon turquoise" },
-  { user:"@fictional_feed",   caption:"90s Levi jeans haul -- unbelievable price",     tags:"#vintage #denim",           likes:"678K", scene:"👖",  query:"vintage clothing thrift store" },
-  { user:"@fictional_feed",   caption:"Stop wearing colours that wash you out",        tags:"#style #colouranalysis",    likes:"2.4M", scene:"🌈",  query:"fashion colour style influencer" },
-  { user:"@fictional_feed",   caption:"Spotted in the wild -- once in a lifetime",     tags:"#leopard #wildlife",        likes:"1.6M", scene:"🐆",  query:"leopard jungle wild cat" },
-  { user:"@fictional_feed",   caption:"This play should be studied in schools",        tags:"#esports #gaming",          likes:"4.5M", scene:"🏆",  query:"esports gaming tournament" },
-  { user:"@fictional_feed",  caption:"I made this game alone in my bedroom",          tags:"#indiegame #gamedev",       likes:"876K", scene:"🎲",  query:"coding developer computer" },
-  { user:"@fictional_feed",     caption:"Turning a blank wall into a landmark",          tags:"#mural #streetart",         likes:"3.2M", scene:"🖌️", query:"mural street art graffiti" },
-  { user:"@fictional_feed",    caption:"100 miles in 24 hours. Never again.",           tags:"#ultramarathon #running",   likes:"1.7M", scene:"🏃",  query:"running trail marathon" },
-  { user:"@fictional_feed",     caption:"Explaining WiFi to my nan for the 8th time",    tags:"#family #comedy",           likes:"1.5M", scene:"👵",  query:"family home funny" },
-  { user:"@fictional_feed",  caption:"He thought this was a salad ingredient",        tags:"#roommate #comedy",         likes:"654K", scene:"🤦",  query:"cooking kitchen funny fail" },
-  { user:"@fictional_feed",       caption:"Overconfidence: a documentary",                 tags:"#gym #comedy #fail",        likes:"3.1M", scene:"😬",  query:"gym fail funny workout" },
+  { user:"@fictional_feed", caption:"Pages turning in a quiet room 📖", tags:"#asmr #books #sounds", likes:"786K", scene:"📖", query:"book pages turning ASMR no people" },
+
+  { user:"@fictional_feed", caption:"Golden hour over the city", tags:"#city #sunset", likes:"892K", scene:"🌇", query:"city skyline golden hour sunset no people" },
+
+  { user:"@fictional_feed", caption:"A setup built for late-night sessions", tags:"#gaming #technology", likes:"567K", scene:"🎮", query:"gaming computer setup RGB desk no people" },
+
+  { user:"@fictional_feed", caption:"Above the clouds", tags:"#mountains #nature", likes:"729K", scene:"🏔️", query:"mountain landscape clouds aerial no people" },
+
+  { user:"@fictional_feed", caption:"When the desk gets out of control", tags:"#workspace #comedy", likes:"876K", scene:"🗒️", query:"messy office desk papers workspace no people" },
+
+  { user:"@fictional_feed", caption:"A year of growth in one frame", tags:"#plants #nature", likes:"988K", scene:"🌿", query:"plant growth timelapse no people" },
+
+  { user:"@fictional_feed", caption:"A different world beneath the surface", tags:"#ocean #underwater", likes:"1.3M", scene:"🌊", query:"underwater ocean reef rocks no people animals" },
+
+  { user:"@fictional_feed", caption:"The ocean glowing after dark", tags:"#ocean #nature", likes:"3.4M", scene:"🌊", query:"bioluminescent ocean waves night no people" },
+
+  { user:"@fictional_feed", caption:"Monday mood, in object form", tags:"#comedy #everyday", likes:"1.2M", scene:"☕", query:"empty coffee cup messy desk no people" },
+
+  { user:"@fictional_feed", caption:"A closer look at everyday design", tags:"#design #objects", likes:"374K", scene:"🪑", query:"minimalist interior design objects no people" },
+
+  { user:"@fictional_feed", caption:"Light, color, and a blank canvas", tags:"#art #timelapse", likes:"441K", scene:"🎨", query:"painting canvas art studio no people" },
+
+  { user:"@fictional_feed", caption:"The perfect curve", tags:"#sports #motion", likes:"3.4M", scene:"⚽", query:"football ball empty stadium no people" },
+
+  { user:"@fictional_feed", caption:"18 hours of fermentation", tags:"#food #pizza", likes:"219K", scene:"🍕", query:"pizza dough preparation closeup no people" },
+
+  { user:"@fictional_feed", caption:"A landscape worth stopping for", tags:"#mountains #nature", likes:"729K", scene:"🏔️", query:"mountain valley landscape nature no people" },
+
+  { user:"@fictional_feed", caption:"Frozen landscapes in motion", tags:"#winter #nature", likes:"1.8M", scene:"❄️", query:"snow landscape ice glacier no people" },
+
+  { user:"@fictional_feed", caption:"Color appearing on an empty wall", tags:"#streetart #art", likes:"332K", scene:"🎨", query:"colorful mural graffiti wall empty street no people" },
+
+  { user:"@fictional_feed", caption:"Street food after dark", tags:"#food #streetfood", likes:"388K", scene:"🌽", query:"street food market food closeup no people" },
+
+  { user:"@fictional_feed", caption:"A recipe built from scratch", tags:"#food #recipe", likes:"512K", scene:"🍛", query:"indian food cooking ingredients closeup no people" },
+
+  { user:"@fictional_feed", caption:"A bowl worth waiting for", tags:"#ramen #japanese", likes:"674K", scene:"🍜", query:"tonkotsu ramen bowl closeup no people" },
+
+  { user:"@fictional_feed", caption:"Clear water, quiet shoreline", tags:"#travel #nature", likes:"1.1M", scene:"🏝️", query:"croatia coastline clear water empty beach no people" },
+
+  { user:"@fictional_feed", caption:"A railway disappearing into the horizon", tags:"#train #landscape", likes:"543K", scene:"🚆", query:"railway tracks sunset landscape no people" },
+
+  { user:"@fictional_feed", caption:"A city view from above", tags:"#travel #architecture", likes:"987K", scene:"🏙️", query:"lisbon architecture city aerial no people" },
+
+  { user:"@fictional_feed", caption:"A quiet corner of the wardrobe", tags:"#fashion #clothing", likes:"1.8M", scene:"👕", query:"vintage clothes rack clothing no people" },
+
+  { user:"@fictional_feed", caption:"Five pieces, endless combinations", tags:"#fashion #minimalism", likes:"923K", scene:"🧥", query:"minimalist clothing wardrobe flat lay no people" },
+
+  { user:"@fictional_feed", caption:"Waves under a different kind of light", tags:"#ocean #night", likes:"3.4M", scene:"🌊", query:"ocean waves night long exposure no people" },
+
+  { user:"@fictional_feed", caption:"A little technology from another era", tags:"#technology #nostalgia", likes:"2.2M", scene:"🕹️", query:"retro game console vintage technology no people" },
+
+  { user:"@fictional_feed", caption:"A compact setup with serious power", tags:"#technology #gaming", likes:"1.3M", scene:"💻", query:"PC computer setup desk technology no people" },
+
+  { user:"@fictional_feed", caption:"From stone to sculpture", tags:"#sculpture #art", likes:"2.8M", scene:"🗿", query:"marble sculpture carving workshop no people" },
+
+  { user:"@fictional_feed", caption:"Ink meeting paper", tags:"#art #design", likes:"1.9M", scene:"🎨", query:"ink drawing art paper closeup no people" },
+
+  { user:"@fictional_feed", caption:"Glass glowing at extreme temperatures", tags:"#craft #glass", likes:"5.1M", scene:"🔥", query:"molten glass glassblowing closeup no people" },
+
+  { user:"@fictional_feed", caption:"The ocean never stays still", tags:"#ocean #waves", likes:"2.6M", scene:"🌊", query:"large ocean waves empty coastline no people" },
+
+  { user:"@fictional_feed", caption:"Small changes add up", tags:"#fitness #routine", likes:"4.8M", scene:"⏱️", query:"fitness equipment empty gym no people" },
+
+  { user:"@fictional_feed", caption:"Rock, texture, and gravity", tags:"#nature #landscape", likes:"6.2M", scene:"🪨", query:"rock cliff mountain landscape no people" },
+
+  { user:"@fictional_feed", caption:"Geometry above the rooftops", tags:"#architecture #city", likes:"3.9M", scene:"🏙️", query:"paris rooftops architecture aerial no people" },
+
+  { user:"@fictional_feed", caption:"Three days in the making", tags:"#baking #pastry", likes:"431K", scene:"🥐", query:"croissant pastry baking closeup no people" },
+
+  { user:"@fictional_feed", caption:"Turquoise water and limestone", tags:"#travel #nature", likes:"1.4M", scene:"🏝️", query:"philippines lagoon turquoise water aerial no people" },
+
+  { user:"@fictional_feed", caption:"Denim never really goes away", tags:"#fashion #denim", likes:"678K", scene:"👖", query:"vintage denim jeans clothing flat lay no people" },
+
+  { user:"@fictional_feed", caption:"A study in color", tags:"#design #color", likes:"2.4M", scene:"🌈", query:"color palette objects design abstract no people" },
+
+  { user:"@fictional_feed", caption:"A game of light and shadow", tags:"#gaming #technology", likes:"4.5M", scene:"🎮", query:"arcade gaming machines empty no people" },
+
+  { user:"@fictional_feed", caption:"Built from an empty screen", tags:"#technology #coding", likes:"876K", scene:"💻", query:"computer code screen programming desk no people" },
+
+  { user:"@fictional_feed", caption:"Turning concrete into color", tags:"#mural #streetart", likes:"3.2M", scene:"🖌️", query:"large colorful mural wall empty street no people" },
+
+  { user:"@fictional_feed", caption:"The trail continues beyond the frame", tags:"#nature #landscape", likes:"1.7M", scene:"🥾", query:"empty hiking trail forest landscape no people" },
+
+  { user:"@fictional_feed", caption:"A kitchen experiment gone slightly wrong", tags:"#food #comedy", likes:"654K", scene:"🍳", query:"messy kitchen cooking ingredients no people" },
+
+  { user:"@fictional_feed", caption:"When the plan meets reality", tags:"#comedy #everyday", likes:"3.1M", scene:"📦", query:"messy desk spilled objects everyday life no people" },
+
+  // ASMR / sensory content
+
+  { user:"@fictional_feed", caption:"The sound of rain on glass 🌧️", tags:"#asmr #rain #relaxing", likes:"1.6M", scene:"🌧️", query:"rain window closeup ASMR no people" },
+
+  { user:"@fictional_feed", caption:"Perfectly satisfying water sounds", tags:"#asmr #water #satisfying", likes:"934K", scene:"💧", query:"water pouring closeup ASMR no people" },
+
+  { user:"@fictional_feed", caption:"Crunch, crackle, repeat", tags:"#asmr #satisfying #sounds", likes:"2.1M", scene:"🍂", query:"leaves crunching closeup ASMR no people animals" },
+
+  { user:"@fictional_feed", caption:"The sound of waves hitting the shore 🌊", tags:"#asmr #ocean #relaxing", likes:"3.2M", scene:"🌊", query:"ocean waves shoreline ASMR no people animals" },
+
+  { user:"@fictional_feed", caption:"A little storm ambience ⛈️", tags:"#asmr #rain #nature", likes:"1.4M", scene:"⛈️", query:"rain storm window ASMR no people animals" },
+
+  { user:"@fictional_feed", caption:"Pages turning in a quiet room 📖", tags:"#asmr #books #sounds", likes:"786K", scene:"📖", query:"book pages turning ASMR no people" },
 
 ];
 
